@@ -1,0 +1,60 @@
+name: Windows
+
+on: 
+  push:
+
+jobs:
+  test-suite:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v2
+      - name: Start Windows Audio Engine
+        run: net start audiosrv
+      - name: Install Scream
+        shell: powershell
+        run: |
+          Start-Service audio*
+          Invoke-WebRequest https://github.com/duncanthrax/scream/releases/download/3.6/Scream3.6.zip -OutFile C:\Scream3.6.zip
+          Extract-7Zip -Path C:\Scream3.6.zip -DestinationPath C:\Scream
+          $cert = (Get-AuthenticodeSignature C:\Scream\Install\driver\Scream.sys).SignerCertificate
+          $store = [System.Security.Cryptography.X509Certificates.X509Store]::new("TrustedPublisher", "LocalMachine")
+          $store.Open("ReadWrite")
+          $store.Add($cert)
+          $store.Close()
+          cd C:\Scream\Install\driver
+          C:\Scream\Install\helpers\devcon install Scream.inf *Scream
+      - name: Show audio device
+        run: Get-CimInstance Win32_SoundDevice | fl *
+      - name: Download GUI
+        shell: powershell
+        run: |
+          Invoke-WebRequest https://openephysgui.jfrog.io/artifactory/Release/windows/open-ephys-v0.6.0-windows.zip -OutFile C:\open-ephys.zip
+          Extract-7Zip -Path C:\open-ephys.zip -DestinationPath C:\open-ephys
+          Get-ChildItem -Path C:\open-ephys -Recurse -Directory -Force -ErrorAction SilentlyContinue | Select-Object FullName
+      - name: Install test-suite
+        shell: powershell
+        run: |
+          pip install git+https://github.com/open-ephys/open-ephys-python-tools.git@pkulik/dev
+          pip install requests matplotlib
+      - name: Test Get/Set Params
+        shell: powershell
+        run: |
+          & C:\open-ephys\open-ephys\open-ephys.exe tests\get_set_params\config.xml
+          python tests\get_set_params\test.py
+      - name: Test Directory Naming
+        shell: powershell
+        run: |
+          & C:\open-ephys\open-ephys\open-ephys.exe tests\test_dir_naming\config.xml
+          python tests\test_dir_naming\test.py
+          Start-Sleep -Seconds 10
+      - name: Test Basic Recording
+        shell: powershell
+        run: |
+          & C:\open-ephys\open-ephys\open-ephys.exe tests\basic_record\config.xml
+          python tests\basic_record\test.py
+          Start-Sleep -Seconds 30
+      - name: Check Recordings
+        shell: powershell
+        run: |
+          Get-ChildItem -Path C:\open-ephys\data -Recurse -Directory -Force -ErrorAction SilentlyContinue | Select-Object FullName
+          Start-Sleep -Seconds 2
