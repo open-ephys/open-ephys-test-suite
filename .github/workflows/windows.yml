@@ -46,15 +46,15 @@ jobs:
         run: |
           & C:\open-ephys\open-ephys\open-ephys.exe tests\test_dir_naming\config.xml
           python tests\test_dir_naming\test.py
-          Start-Sleep -Seconds 10
       - name: Test Basic Recording
         shell: powershell
         run: |
           & C:\open-ephys\open-ephys\open-ephys.exe tests\basic_record\config.xml
           python tests\basic_record\test.py
-          Start-Sleep -Seconds 30
-      - name: Check Recordings
+          Get-ChildItem -Path C:\open-ephys\data -Recurse -Directory -Force -ErrorAction SilentlyContinue | Select-Object FullName
+      - name: Test Synchronization
         shell: powershell
         run: |
-          Get-ChildItem -Path C:\open-ephys\data -Recurse -Directory -Force -ErrorAction SilentlyContinue | Select-Object FullName
-          Start-Sleep -Seconds 2
+          Copy-Item "tests\synchronization\SourceSim.dll" -Destination "C:\open-ephys\open-ephys\plugins"
+          & C:\open-ephys\open-ephys\open-ephys.exe tests\synchronization\config.xml
+          python tests\synchronization\test.py
