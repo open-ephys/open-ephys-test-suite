@@ -23,7 +23,7 @@ def test(gui):
 
         #TODO: Record data and then check that the recorded folder has the desired directory name:
 
-        #gui.quit()
+        gui.quit()
 
     # Validate results
     

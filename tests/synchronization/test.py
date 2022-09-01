@@ -3,6 +3,8 @@ from open_ephys.analysis import Session
 
 import config
 
+import time
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -25,6 +27,8 @@ def test(gui):
                 gui.record(config.test_params['rec_time'])
 
             gui.idle()
+
+            time.sleep(5)
 
         gui.quit()
         

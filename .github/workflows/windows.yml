@@ -36,6 +36,25 @@ jobs:
         run: |
           pip install git+https://github.com/open-ephys/open-ephys-python-tools.git@pkulik/dev
           pip install requests matplotlib
+      - name: Round Trip Test
+        shell: powershell
+        run: |
+          Copy-Item "tests\round_trip_record\RecordEngines\plugins\NWBFormat.dll" -Destination "C:\open-ephys\open-ephys\plugins"
+          Copy-Item "tests\round_trip_record\RecordEngines\plugins\open-ephys-data-format.dll" -Destination "C:\open-ephys\open-ephys\plugins"
+          Copy-Item "tests\round_trip_record\RecordEngines\shared\hdf5_cpp.dll" -Destination "C:\open-ephys\open-ephys\shared"
+          Copy-Item "tests\round_trip_record\RecordEngines\shared\hdf5.dll" -Destination "C:\open-ephys\open-ephys\shared"
+          Copy-Item "tests\round_trip_record\RecordEngines\shared\OpenEphysHDF5.dll" -Destination "C:\open-ephys\open-ephys\shared"
+          Start-Sleep -Seconds 4
+          & C:\open-ephys\open-ephys\open-ephys.exe tests\round_trip_record\config.xml
+          Start-Sleep -Seconds 10
+          python tests\round_trip_record\test.py
+      - name: Test Synchronization
+        shell: powershell
+        run: |
+          Copy-Item "tests\synchronization\SourceSim.dll" -Destination "C:\open-ephys\open-ephys\plugins"
+          & C:\open-ephys\open-ephys\open-ephys.exe tests\synchronization\config.xml
+          Start-Sleep -Seconds 4
+          python tests\synchronization\test.py
       - name: Test Get/Set Params
         shell: powershell
         run: |
@@ -48,17 +67,3 @@ jobs:
           & C:\open-ephys\open-ephys\open-ephys.exe tests\test_dir_naming\config.xml
           Start-Sleep -Seconds 2
           python tests\test_dir_naming\test.py
-      - name: Test Basic Recording
-        shell: powershell
-        run: |
-          & C:\open-ephys\open-ephys\open-ephys.exe tests\basic_record\config.xml
-          Start-Sleep -Seconds 2
-          python tests\basic_record\test.py
-          Get-ChildItem -Path C:\open-ephys\data -Recurse -Directory -Force -ErrorAction SilentlyContinue | Select-Object FullName
-      - name: Test Synchronization
-        shell: powershell
-        run: |
-          Copy-Item "tests\synchronization\SourceSim.dll" -Destination "C:\open-ephys\open-ephys\plugins"
-          & C:\open-ephys\open-ephys\open-ephys.exe tests\synchronization\config.xml
-          Start-Sleep -Seconds 2
-          python tests\synchronization\test.py

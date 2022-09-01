@@ -2,7 +2,7 @@ from open_ephys.control import OpenEphysHTTPServer
 from open_ephys.analysis import Session
 
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 import config
 
@@ -41,10 +41,7 @@ def test(gui):
 
             for str_idx, stream in enumerate(recording.continuous):
 
-                try: 
-                    SAMPLE_RATE = stream.metadata['sample_rate'] 
-                except:
-                    SAMPLE_RATE = 40000 #OpenEphys format does not include sample rate in metadata 
+                SAMPLE_RATE = stream.metadata['sample_rate']
 
                 SAMPLE_NUM_TOLERANCE = 0.1 * SAMPLE_RATE
 
@@ -53,15 +50,22 @@ def test(gui):
                 else:
                     print("Data size test FAILED! {} != {}".format(len(stream.timestamps), config.test_params['rec_time']*stream.metadata['sample_rate']))
 
-                if show:
+                # if show:
 
-                    fig = plt.figure(1)
-                    fig.suptitle(stream.name, fontsize=12)
-                    ax = fig.add_subplot(config.test_params['num_exp'], config.test_params['num_rec'], rec_idx+1)
-                    ax.plot(stream.timestamps, stream.samples[:,0])
-                    ax.set_xlabel('Time [s]')
+                #     fig = plt.figure(1)
+                #     fig.suptitle(stream.name, fontsize=12)
+                #     ax = fig.add_subplot(config.test_params['num_exp'], config.test_params['num_rec'], rec_idx+1)
+                #     ax.plot(stream.timestamps, stream.samples[:,0])
+                #     ax.set_xlabel('Time [s]')
 
-        if show: plt.show()
+            #TODO: Handle case with no events
+            #if recording.events.timestamps:
+            #    print(recording.events)
+
+            if recording.spikes:
+                print(recording.spikes)
+
+        # if show: plt.show()
 
 if __name__ == '__main__':
     test(OpenEphysHTTPServer(config.test_params['address']))

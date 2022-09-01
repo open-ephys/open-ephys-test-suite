@@ -27,7 +27,7 @@ BASE_TEXT           = '' #Text to describe the experiment name
 APPEND_TEXT         = '' #Text to append to the end of the experiment name
 
 test_params = dict(
-    fetch = False, # True to fetch new data and re-run test, False to just show most recent test results 
+    fetch = True, # True to fetch new data and re-run test, False to just show most recent test results 
     address = ADDRESS, 
     acq_time = ACQUISITION_TIME,
     rec_time = RECORD_TIME,

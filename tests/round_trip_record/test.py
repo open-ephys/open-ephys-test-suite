@@ -1,11 +1,14 @@
 from open_ephys.control import OpenEphysHTTPServer
 from open_ephys.analysis import Session
 
-import numpy as np
-import matplotlib.pyplot as plt
+#import numpy as np
+#import matplotlib.pyplot as plt
 
 import config
 import time
+import os
+
+import numpy as np
 
 def test(gui):
 
@@ -13,6 +16,8 @@ def test(gui):
     RECORD_ENGINES = ("BINARY", "NWB2", "OPEN EPHYS")
 
     if config.test_params['fetch']:
+
+        file_reader = gui.get_processors("File Reader")[0]
 
         for idx, engine in enumerate(RECORD_ENGINES):
 
@@ -33,11 +38,33 @@ def test(gui):
                 gui.idle()
                 time.sleep(2)
 
-            file_reader = gui.get_processors("File Reader")[0]
+            path = gui.get_latest_recordings(config.test_params['parent_directory'])[0]
+            
+            if engine != 'NWB2':
 
-            gui.set_file_path(file_reader['id'], config.test_params['parent_directory'])
+                session = Session(path)
+
+                for idx, node in enumerate(session.recordnodes):
+
+                    path = node.recordings[0].directory
+
+                    if node.format == 'binary':
+                        data_path = os.path.join(path, 'structure.oebin')
+                    elif node.format == 'open-ephys':
+                        data_path = os.path.join(path, 'structure.openephys')
+
+                    break
+
+            else:
+
+                data_path = os.path.join(path, "Record Node 101", "experiment1.nwb")
+
+            #Set File Reader to read from the last recorded data path
+            gui.set_file_path(file_reader['id'], "file=" + data_path)
 
         gui.quit()
+
+        time.sleep(4)
 
     # Validate
 
@@ -60,8 +87,6 @@ def test(gui):
                 for str_idx, stream in enumerate(recording.continuous):
 
                     print("\tFound new stream w/ format {}".format(recording.format))
-
-                    stream.metadata['sample_rate'] = 40000 #OpenEphys format does not include sample rate in metadata
 
                     SAMPLE_NUM_TOLERANCE = 0.1 * stream.metadata['sample_rate']
 
