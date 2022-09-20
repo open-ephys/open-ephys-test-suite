@@ -4,6 +4,8 @@ from open_ephys.analysis import Session
 import numpy as np
 #import matplotlib.pyplot as plt
 
+import time
+
 import config
 
 def test(gui):
@@ -20,7 +22,8 @@ def test(gui):
 
             for _ in range(config.test_params['num_rec']):
 
-                gui.acquire(config.test_params['acq_time'])
+                gui.acquire()
+                time.sleep(config.test_params['acq_time'])
                 gui.record(config.test_params['rec_time'])
 
             gui.idle()

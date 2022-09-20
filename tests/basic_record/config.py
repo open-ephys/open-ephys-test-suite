@@ -15,7 +15,7 @@ Test Description: Record data with the GUI and validate results given a config f
 '''
 
 DEBUG_MODE = True
-ADDRESS = 'http://127.0.0.1:37497'
+ADDRESS = '127.0.0.1'
 
 ACQUISITION_TIME    = 2 #Number of seconds to acquire data before starting recording (allows for synchronization)
 RECORD_TIME         = 5 #Number of seconds to record data between acquistiions

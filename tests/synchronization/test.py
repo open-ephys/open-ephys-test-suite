@@ -23,7 +23,8 @@ def test(gui):
 
             for _ in range(config.test_params['num_rec']):
 
-                gui.acquire(config.test_params['acq_time'])
+                gui.acquire()
+                time.sleep(config.test_params['acq_time'])
                 gui.record(config.test_params['rec_time'])
 
             gui.idle()
@@ -41,7 +42,7 @@ def test(gui):
 
             for str_idx, stream in enumerate(recording.continuous):
 
-                recording.add_sync_channel(1, 100, str_idx, main=str_idx==0)  # use as the main timestamps
+                recording.add_sync_line(1, 100, str_idx, main=str_idx==0)  # use as the main timestamps
 
                 show = False
                 if show:

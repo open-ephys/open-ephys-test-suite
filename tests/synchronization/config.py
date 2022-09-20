@@ -15,7 +15,7 @@ Test Description: Ensures that data synchronization is working correctly.
 '''
 
 DEBUG_MODE = False
-ADDRESS = 'http://127.0.0.1:37497'
+ADDRESS = '127.0.0.1'
 
 ACQUISITION_TIME    = 10 #Number of seconds to acquire data before starting recording (allows for synchronization)
 RECORD_TIME         = 10 #Number of seconds to record data between acquistiions

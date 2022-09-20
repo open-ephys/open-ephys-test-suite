@@ -34,7 +34,7 @@ jobs:
       - name: Install test-suite
         shell: powershell
         run: |
-          pip install git+https://github.com/open-ephys/open-ephys-python-tools.git@pkulik/dev
+          pip install git+https://github.com/open-ephys/open-ephys-python-tools.git@0.6.0
           pip install requests matplotlib
       - name: Round Trip Test
         shell: powershell

@@ -1,8 +1,8 @@
 from open_ephys.control import OpenEphysHTTPServer
 from open_ephys.analysis import Session
 
-#import numpy as np
-#import matplotlib.pyplot as plt
+import numpy as np
+import matplotlib.pyplot as plt
 
 import config
 import time
@@ -32,7 +32,8 @@ def test(gui):
 
                 for _ in range(config.test_params['num_rec']):
 
-                    gui.acquire(config.test_params['acq_time'])
+                    gui.acquire()
+                    time.sleep(config.test_params['acq_time'])
                     gui.record(config.test_params['rec_time'])
 
                 gui.idle()
@@ -88,13 +89,14 @@ def test(gui):
 
                     print("\tFound new stream w/ format {}".format(recording.format))
 
+                    '''
                     SAMPLE_NUM_TOLERANCE = 0.1 * stream.metadata['sample_rate']
 
                     if np.absolute(len(stream.timestamps) - config.test_params['rec_time']*stream.metadata['sample_rate']) < SAMPLE_NUM_TOLERANCE:
                         print("\t\tData size test PASSED!")
                     else:
                         print("\t\tData size test FAILED! {} != {}".format(len(stream.timestamps), config.test_params['rec_time']*stream.metadata['sample_rate']))
-
+                    '''
                     show = False
                     if show:
 
