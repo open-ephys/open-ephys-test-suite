@@ -1,6 +1,3 @@
-import platform
-import os
-
 from open_ephys.control import OpenEphysHTTPServer
 
 """
@@ -20,18 +17,19 @@ def test(gui, params):
     numProcessorsBeforeAdd = len(gui.get_processors())
 
     # Add a processor to end of signal chain
-    test_name = 'Add processor'
+    testName = 'Add processor'
     gui.add_processor("Bandpass Filter")
 
     # Check if add was successful
     numProcessorsAfterAdd = len(gui.get_processors())
 
     if numProcessorsAfterAdd == numProcessorsBeforeAdd + 1:
-        results[test_name] = "PASSED"
+        results[testName] = "PASSED"
     else:
-        results[test_name] = "FAILED\n\tProcessor count before add: " + str(numProcessorsBeforeAdd) + " after: " + str(numProcessorsAfterAdd)
+        results[testName] = "FAILED\n\tProcessor count before add: " + str(numProcessorsBeforeAdd) + " after: " + str(numProcessorsAfterAdd)
 
     # Delete the most recently added processor
+    testName = 'Delete processor'
     mostRecentlyAddedProcessorId = max(gui.get_processors(), key=lambda processor: processor['id'])['id']
     gui.delete_processor(mostRecentlyAddedProcessorId)
 
@@ -40,20 +38,19 @@ def test(gui, params):
     numProcessorsAfterDelete = len(gui.get_processors())
 
     if numProcessorsAfterDelete == numProcessorsBeforeDelete - 1:
-        results['Delete processor'] = "PASSED"
+        results[testName] = "PASSED"
     else:
-        results['Delete processor'] = "FAILED\n\tProcessor count before delete: " + str(numProcessorsBeforeDelete) + " after: " + str(numProcessorsAfterDelete)
+        results[testName] = "FAILED\n\tProcessor count before delete: " + str(numProcessorsBeforeDelete) + " after: " + str(numProcessorsAfterDelete)
 
-    # Print summary of results
-    for test, result in results.items():
-        print(test, '-'*(80-len(test)), result)
+    return results
 
 '''
 ================================================================================================================================================
 '''
-
+import os
 import sys
 import argparse
+import platform
 
 from pathlib import Path
 
@@ -78,9 +75,12 @@ if __name__ == '__main__':
     parser.add_argument('--prepend_text', required=False, type=str, default='')
     parser.add_argument('--base_text', required=False, type=str, default='')
     parser.add_argument('--append_text', required=False, type=str, default='')
-    parser.add_argument('--parent_directory', required=False, type=str, default='RECORD_PATH')
+    parser.add_argument('--parent_directory', required=False, type=str, default=RECORD_PATH)
     parser.add_argument('--engine', required=False, type=str, default='engine=0')
 
     params = vars(parser.parse_args(sys.argv[1:]))
 
-    test(OpenEphysHTTPServer(), params)
+    results = test(OpenEphysHTTPServer(), params)
+
+    for test, result in results.items():
+        print(test, '-'*(80-len(test)), result)
