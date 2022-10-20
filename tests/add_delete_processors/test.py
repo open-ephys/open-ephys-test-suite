@@ -42,6 +42,8 @@ def test(gui, params):
     else:
         results[testName] = "FAILED\n\tProcessor count before delete: " + str(numProcessorsBeforeDelete) + " after: " + str(numProcessorsAfterDelete)
 
+    gui.quit()
+
     return results
 
 '''

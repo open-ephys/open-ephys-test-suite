@@ -106,5 +106,3 @@ if __name__ == '__main__':
 
     for test, result in results.items():
         print(test, '-'*(80-len(test)), result)
-
-    
