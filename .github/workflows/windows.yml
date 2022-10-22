@@ -36,6 +36,12 @@ jobs:
         run: |
           pip install git+https://github.com/open-ephys/open-ephys-python-tools.git@0.6.0
           pip install requests matplotlib
+      - name: Test Get/Set Params
+        shell: powershell
+        run: |
+          & C:\open-ephys\open-ephys\open-ephys.exe
+          Start-Sleep -Seconds 2
+          python tests\get_set_params\test.py --mode githubactions
       - name: Round Trip Test
         shell: powershell
         run: |
@@ -55,12 +61,6 @@ jobs:
           & C:\open-ephys\open-ephys\open-ephys.exe tests\synchronization\config.xml
           Start-Sleep -Seconds 4
           python tests\synchronization\test.py
-      - name: Test Get/Set Params
-        shell: powershell
-        run: |
-          & C:\open-ephys\open-ephys\open-ephys.exe
-          Start-Sleep -Seconds 2
-          python tests\get_set_params\test.py
       - name: Test Directory Naming
         shell: powershell
         run: |
