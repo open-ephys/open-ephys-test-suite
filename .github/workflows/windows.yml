@@ -58,12 +58,12 @@ jobs:
       - name: Test Get/Set Params
         shell: powershell
         run: |
-          & C:\open-ephys\open-ephys\open-ephys.exe tests\get_set_params\config.xml
+          & C:\open-ephys\open-ephys\open-ephys.exe
           Start-Sleep -Seconds 2
           python tests\get_set_params\test.py
       - name: Test Directory Naming
         shell: powershell
         run: |
-          & C:\open-ephys\open-ephys\open-ephys.exe tests\test_dir_naming\config.xml
+          & C:\open-ephys\open-ephys\open-ephys.exe
           Start-Sleep -Seconds 2
           python tests\test_dir_naming\test.py
