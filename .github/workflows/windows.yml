@@ -40,7 +40,7 @@ jobs:
         shell: powershell
         run: |
           & C:\open-ephys\open-ephys\open-ephys.exe
-          Start-Sleep -Seconds 2
+          Start-Sleep -Seconds 10
           python tests\get_set_params\test.py --mode githubactions
       - name: Round Trip Test
         shell: powershell
