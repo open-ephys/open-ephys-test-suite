@@ -17,7 +17,7 @@ def test(gui, params):
     numProcessorsBeforeAdd = len(gui.get_processors())
 
     # Add a processor to end of signal chain
-    testName = 'Add processor'
+    testName = 'Add processor to existing chain'
     gui.add_processor("Bandpass Filter")
 
     # Check if add was successful
@@ -41,6 +41,31 @@ def test(gui, params):
         results[testName] = "PASSED"
     else:
         results[testName] = "FAILED\n\tProcessor count before delete: " + str(numProcessorsBeforeDelete) + " after: " + str(numProcessorsAfterDelete)
+
+
+    # Clear signal chain
+    testName = 'Clear the signal chain'
+    gui.clear_signal_chain()
+
+    numProcessorsBeforeClear = numProcessorsAfterDelete
+    numProcessorsAfterClear = len(gui.get_processors())
+    if numProcessorsAfterClear == 0:
+        results[testName] = "PASSED"
+    else:
+        results[testName] = "FAILED\n\tProcessor count before clear: " + str(numProcessorsBeforeClear) + " after: " + str(numProcessorsAfterClear)
+
+    # Add processor to empty signal chain
+    testName = 'Add processor to empty signal chain'
+
+    numProcessorsBeforeAdd = numProcessorsAfterClear
+    gui.add_processor("File Reader")
+    numProcessorsAfterAdd = len(gui.get_processors())
+
+    if numProcessorsAfterAdd == numProcessorsBeforeAdd + 1:
+        results[testName] = "PASSED"
+    else:
+        results[testName] = "FAILED\n\tProcessor count before add: " + str(numProcessorsBeforeAdd) + " after: " + str(numProcessorsAfterAdd)
+
 
     gui.quit()
 
