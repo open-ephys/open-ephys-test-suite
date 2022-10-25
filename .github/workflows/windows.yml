@@ -39,7 +39,7 @@ jobs:
       - name: Test Basic Acquisition
         shell: powershell
         run: |
-          & C:\open-ephys\open-ephys.exe
+          & C:\open-ephys\open-ephys.exe configs\file_reader_config.xml
           Start-Sleep -Seconds 5
           python tests\basic_acquire.py --mode githubactions    
       - name: Test Get/Set Recording Info
