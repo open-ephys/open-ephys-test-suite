@@ -1,5 +1,7 @@
 from open_ephys.control import OpenEphysHTTPServer
 
+import time
+
 """
 Test Name: Add/Delete Processor
 Test Description: Add and delete a processor from the signal chain
@@ -10,8 +12,9 @@ def test(gui, params):
     # Store test results to report in a dictionary
     results = {}
 
-    # Load default FileReader config chain
-    gui.load(params['cfg_path'])
+    # Load config for this test
+    if params['mode'] == 'local':
+        gui.load(params['cfg_path'])
 
     # Get list of processors in signal chain
     numProcessorsBeforeAdd = len(gui.get_processors())
@@ -20,7 +23,6 @@ def test(gui, params):
     testName = 'Add processor to existing chain'
     gui.add_processor("Bandpass Filter")
 
-    # Check if add was successful
     numProcessorsAfterAdd = len(gui.get_processors())
 
     if numProcessorsAfterAdd == numProcessorsBeforeAdd + 1:
@@ -33,7 +35,6 @@ def test(gui, params):
     mostRecentlyAddedProcessorId = max(gui.get_processors(), key=lambda processor: processor['id'])['id']
     gui.delete_processor(mostRecentlyAddedProcessorId)
 
-    # Check if delete was successful
     numProcessorsBeforeDelete = numProcessorsAfterAdd
     numProcessorsAfterDelete = len(gui.get_processors())
 
@@ -41,7 +42,6 @@ def test(gui, params):
         results[testName] = "PASSED"
     else:
         results[testName] = "FAILED\n\tProcessor count before delete: " + str(numProcessorsBeforeDelete) + " after: " + str(numProcessorsAfterDelete)
-
 
     # Clear signal chain
     testName = 'Clear the signal chain'
@@ -69,6 +69,8 @@ def test(gui, params):
 
     gui.quit()
 
+    time.sleep(2)
+
     return results
 
 '''
@@ -94,7 +96,7 @@ if __name__ == '__main__':
     parser.add_argument('--mode', required=True, choices={'local', 'githubactions'})
     parser.add_argument('--fetch', required=False, default=True, action='store_true')
     parser.add_argument('--address', required=False, type=str, default='http://127.0.0.1')
-    parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, 'file_reader_config.xml'))
+    parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '../configs/file_reader_config.xml'))
     parser.add_argument('--acq_time', required=False, type=int, default=2)
     parser.add_argument('--rec_time', required=False, type=int, default=5)
     parser.add_argument('--num_rec', required=False, type=int, default=1)

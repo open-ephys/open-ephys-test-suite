@@ -28,42 +28,48 @@ jobs:
       - name: Download GUI
         shell: powershell
         run: |
-          Invoke-WebRequest https://openephysgui.jfrog.io/artifactory/Release/windows/open-ephys-v0.6.0-windows.zip -OutFile C:\open-ephys.zip
+          Invoke-WebRequest https://openephysgui.jfrog.io/artifactory/Dev/windows/open-ephys-v0.6.3-dev-windows.zip -OutFile C:\open-ephys.zip
           Extract-7Zip -Path C:\open-ephys.zip -DestinationPath C:\open-ephys
+          New-Item -Path 'C:\open-ephys\data' -ItemType Directory
           Get-ChildItem -Path C:\open-ephys -Recurse -Directory -Force -ErrorAction SilentlyContinue | Select-Object FullName
       - name: Install test-suite
         shell: powershell
         run: |
-          pip install git+https://github.com/open-ephys/open-ephys-python-tools.git@0.6.0
-          pip install requests matplotlib
-      - name: Test Get/Set Params
+          pip install git+https://github.com/open-ephys/open-ephys-python-tools.git@0.6.0    
+      - name: Test Basic Acquisition
         shell: powershell
         run: |
-          & C:\open-ephys\open-ephys\open-ephys.exe
-          Start-Sleep -Seconds 10
-          python tests\get_set_params\test.py --mode githubactions
+          & C:\open-ephys\open-ephys.exe
+          Start-Sleep -Seconds 5
+          python tests\basic_acquire.py --mode githubactions    
+      - name: Test Get/Set Recording Info
+        shell: powershell
+        run: |
+          & C:\open-ephys\open-ephys.exe configs\file_reader_config.xml
+          Start-Sleep -Seconds 5
+          python tests\get_set_recording_info.py --mode githubactions    
+          Get-ChildItem -Path C:\open-ephys\data -Recurse -Directory -Force -ErrorAction SilentlyContinue | Select-Object FullName
+      - name: Test Add/Delete processors
+        shell: powershell
+        run: |
+          & C:\open-ephys\open-ephys.exe configs\file_reader_config.xml
+          Start-Sleep -Seconds 5
+          python tests\add_delete_processors.py --mode githubactions  
+      - name: Test Basic Record
+        shell: powershell
+        run: |
+          & C:\open-ephys\open-ephys.exe configs\file_reader_config.xml
+          Start-Sleep -Seconds 5
+          python tests\basic_record.py --mode githubactions 
       - name: Round Trip Test
         shell: powershell
         run: |
-          Copy-Item "tests\round_trip_record\RecordEngines\plugins\NWBFormat.dll" -Destination "C:\open-ephys\open-ephys\plugins"
-          Copy-Item "tests\round_trip_record\RecordEngines\plugins\open-ephys-data-format.dll" -Destination "C:\open-ephys\open-ephys\plugins"
-          Copy-Item "tests\round_trip_record\RecordEngines\shared\hdf5_cpp.dll" -Destination "C:\open-ephys\open-ephys\shared"
-          Copy-Item "tests\round_trip_record\RecordEngines\shared\hdf5.dll" -Destination "C:\open-ephys\open-ephys\shared"
-          Copy-Item "tests\round_trip_record\RecordEngines\shared\OpenEphysHDF5.dll" -Destination "C:\open-ephys\open-ephys\shared"
+          Copy-Item "plugins\NWBFormat.dll" -Destination "C:\open-ephys\plugins"
+          Copy-Item "plugins\open-ephys-data-format.dll" -Destination "C:\open-ephys\plugins"
+          Copy-Item "shared\hdf5_cpp.dll" -Destination "C:\open-ephys\shared"
+          Copy-Item "shared\hdf5.dll" -Destination "C:\open-ephys\shared"
+          Copy-Item "shared\OpenEphysHDF5.dll" -Destination "C:\open-ephys\shared"
           Start-Sleep -Seconds 4
-          & C:\open-ephys\open-ephys\open-ephys.exe tests\round_trip_record\config.xml
+          & C:\open-ephys\open-ephys.exe configs\file_reader_config.xml
           Start-Sleep -Seconds 10
-          python tests\round_trip_record\test.py
-      - name: Test Synchronization
-        shell: powershell
-        run: |
-          Copy-Item "tests\synchronization\SourceSim.dll" -Destination "C:\open-ephys\open-ephys\plugins"
-          & C:\open-ephys\open-ephys\open-ephys.exe tests\synchronization\config.xml
-          Start-Sleep -Seconds 4
-          python tests\synchronization\test.py
-      - name: Test Directory Naming
-        shell: powershell
-        run: |
-          & C:\open-ephys\open-ephys\open-ephys.exe
-          Start-Sleep -Seconds 2
-          python tests\test_dir_naming\test.py
+          python tests\round_trip_record.py --mode githubactions
