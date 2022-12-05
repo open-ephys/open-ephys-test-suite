@@ -5,25 +5,23 @@ import time
 
 def test(gui, params):
 
+    results = {}
+
     # Fetch fresh data if needed
     if params['fetch']:
 
-        # Load config for this test
-        if params['mode'] == 'local':
-            gui.load(params['cfg_path']) 
-        else: # githubactions
-            gui.add_processor("File Reader")
-
-        results = {}
+        gui.add_processor('File Reader')
 
         testName = 'Basic acquisition'
 
-        for node in gui.get_recording_info()['record_nodes']:
-            print(node['parent_directory'])
-
         gui.acquire()
-        print("Acquiring...")
         time.sleep(params['acq_time'])
+
+        if gui.status()['mode'] == 'ACQIURE':
+            results[testName] = "PASSED"
+        else:
+            results[testName] = "FAILED\n\tGUI returned mode: {} expected mode: {}" % (gui.status()['mode'], 'ACQUIRE')
+
         gui.idle()
 
         gui.quit()

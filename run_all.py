@@ -12,5 +12,8 @@ for test in tests:
     print("Running: ", test)
     if platform.system() == 'Windows':
         os.startfile(GUI_EXE)
-    os.system("python " + test + " --mode local")
+    rc = os.system("python " + test + " --mode local")
+    if rc != 0:
+        print("Test failed: ", test)
+        break
     time.sleep(4)

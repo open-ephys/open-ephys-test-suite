@@ -34,9 +34,6 @@ def test(gui, params):
         # Only latest RecordNode will have the newly set parent directory
         testName = 'Set Recording Locations'
 
-        for node in gui.get_recording_info()['record_nodes']:
-            print(node['parent_directory'])
-
         # Run some actions and record data
         for n in range(params['num_exp']):
 
@@ -51,9 +48,9 @@ def test(gui, params):
                 gui.record()
                 time.sleep(params['rec_time'])
 
-                print("Recording...")
-
             gui.idle()
+
+        gui.quit()
 
     #Find the expected recordings
     for node, dir in nodeDirectories.items():

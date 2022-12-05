@@ -14,6 +14,8 @@ def test(gui, params):
 
     RECORD_ENGINES = ("BINARY", "NWB2", "OPEN EPHYS")
 
+    # Fetch new data
+
     if params['fetch']:
 
         # Load config for this test
@@ -24,8 +26,9 @@ def test(gui, params):
 
         for idx, engine in enumerate(RECORD_ENGINES):
 
+            params['engine'] = "engine=" + str(idx)
+
             for node in gui.get_processors("Record Node"):
-                params['engine'] = "engine=" + str(idx)
                 gui.set_record_engine(node['id'], params['engine'])
                 gui.set_record_path(node['id'], params['parent_directory'])
 
@@ -35,15 +38,20 @@ def test(gui, params):
 
                 for _ in range(params['num_rec']):
 
+                    # Start data acquisition
                     gui.acquire()
                     time.sleep(params['acq_time'])
+                    # Start recording data
                     gui.record()
                     time.sleep(params['rec_time'])
 
+                # Stop data acquisition
                 gui.idle()
                 time.sleep(2)
 
             path = gui.get_latest_recordings(params['parent_directory'])[0]
+
+            print(path)
             
             if engine != 'NWB2':
 
@@ -69,7 +77,8 @@ def test(gui, params):
 
         gui.quit()
 
-        time.sleep(4)
+        time.sleep(5)
+
 
     # Validate
 
@@ -84,19 +93,22 @@ def test(gui, params):
             if params['num_rec']*params['num_exp'] == len(node.recordings):
                 results[testName] = "PASSED"
             else:
-                results[testName] = "FAILED\n\tExpected number of recordings: {} actual: {}" % (params['num_rec']*params['num_exp'], len(node.recordings))
+                results[testName] = "FAILED\n\tExpected number of recordings: %d actual: %d" % (params['num_rec']*params['num_exp'], len(node.recordings))
 
             for rec_idx, recording in enumerate(node.recordings):
 
-                for str_idx, stream in enumerate(recording.continuous):
+                for stream in enumerate(recording.continuous):
                             
                     testName = str(recording.format) + " sample count"
-                    SAMPLE_NUM_TOLERANCE = 0.1 * stream.metadata['sample_rate']
+                    SAMPLE_NUM_TOLERANCE = 0.2 * stream.metadata['sample_rate']
 
-                    if np.absolute(len(stream.timestamps) - params['rec_time']*stream.metadata['sample_rate']) < SAMPLE_NUM_TOLERANCE:
+                    actual = len(stream.timestamps)
+                    expected = int(params['rec_time']*stream.metadata['sample_rate'])
+
+                    if np.absolute(actual - expected) < SAMPLE_NUM_TOLERANCE:
                         results[testName] = "PASSED"
                     else:
-                        results[testName] = "FAILED\n\tExpected number of samples {} != {}" % (len(stream.timestamps), params['rec_time']*stream.metadata['sample_rate'])
+                        results[testName] = "FAILED\n\tExpected number of samples %d != %d" % (actual, expected)
 
                     show = False
                     if show:
@@ -143,7 +155,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--mode', required=True, choices={'local', 'githubactions'})
-    parser.add_argument('--fetch', required=False, default=False)
+    parser.add_argument('--fetch', required=False, type=int, default=0)
     parser.add_argument('--address', required=False, type=str, default='http://127.0.0.1')
     parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '../configs/file_reader_config.xml'))
     parser.add_argument('--acq_time', required=False, type=int, default=2)

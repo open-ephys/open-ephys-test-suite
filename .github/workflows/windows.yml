@@ -28,20 +28,22 @@ jobs:
       - name: Download GUI
         shell: powershell
         run: |
-          Invoke-WebRequest https://openephysgui.jfrog.io/artifactory/Dev/windows/open-ephys-v0.6.3-dev-windows.zip -OutFile C:\open-ephys.zip
+          Invoke-WebRequest https://openephysgui.jfrog.io/artifactory/Dev/windows/open-ephys-v0.6.3-beta-windows.zip -OutFile C:\open-ephys.zip
           Extract-7Zip -Path C:\open-ephys.zip -DestinationPath C:\open-ephys
           New-Item -Path 'C:\open-ephys\data' -ItemType Directory
-          Get-ChildItem -Path C:\open-ephys -Recurse -Directory -Force -ErrorAction SilentlyContinue | Select-Object FullName
       - name: Install test-suite
         shell: powershell
         run: |
-          pip install git+https://github.com/open-ephys/open-ephys-python-tools.git@0.6.0    
-      - name: Test Basic Acquisition
+          pip install open-ephys-python-tools
+      - name: Round Trip Test
         shell: powershell
         run: |
+          Copy-Item -Path "D:\a\open-ephys-test-suite\open-ephys-test-suite\plugins\*" -Destination "C:\open-ephys\plugins" -Recurse
+          Copy-Item -Path "D:\a\open-ephys-test-suite\open-ephys-test-suite\shared\*" -Destination "C:\open-ephys\shared" -Recurse
+          Start-Sleep -Seconds 2
           & C:\open-ephys\open-ephys.exe configs\file_reader_config.xml
           Start-Sleep -Seconds 5
-          python tests\basic_acquire.py --mode githubactions    
+          python tests\round_trip_record.py --mode githubactions --fetch 1 --num_exp 2 --num_rec 2
       - name: Test Get/Set Recording Info
         shell: powershell
         run: |
@@ -49,27 +51,15 @@ jobs:
           Start-Sleep -Seconds 5
           python tests\get_set_recording_info.py --mode githubactions    
           Get-ChildItem -Path C:\open-ephys\data -Recurse -Directory -Force -ErrorAction SilentlyContinue | Select-Object FullName
-      - name: Test Add/Delete processors
+      - name: Test Get/Set Parameters
         shell: powershell
         run: |
           & C:\open-ephys\open-ephys.exe configs\file_reader_config.xml
           Start-Sleep -Seconds 5
-          python tests\add_delete_processors.py --mode githubactions  
-      - name: Test Basic Record
+          python tests\get_set_parameters.py --mode githubactions    
+      - name: Test Add/Delete Processors
         shell: powershell
         run: |
           & C:\open-ephys\open-ephys.exe configs\file_reader_config.xml
           Start-Sleep -Seconds 5
-          python tests\basic_record.py --mode githubactions 
-      - name: Round Trip Test
-        shell: powershell
-        run: |
-          Copy-Item "plugins\NWBFormat.dll" -Destination "C:\open-ephys\plugins"
-          Copy-Item "plugins\open-ephys-data-format.dll" -Destination "C:\open-ephys\plugins"
-          Copy-Item "shared\hdf5_cpp.dll" -Destination "C:\open-ephys\shared"
-          Copy-Item "shared\hdf5.dll" -Destination "C:\open-ephys\shared"
-          Copy-Item "shared\OpenEphysHDF5.dll" -Destination "C:\open-ephys\shared"
-          Start-Sleep -Seconds 4
-          & C:\open-ephys\open-ephys.exe configs\file_reader_config.xml
-          Start-Sleep -Seconds 10
-          python tests\round_trip_record.py --mode githubactions
+          python tests\add_delete_processors.py --mode githubactions

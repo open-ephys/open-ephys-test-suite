@@ -13,8 +13,7 @@ def test(gui, params):
     results = {}
 
     # Load config for this test
-    if params['mode'] == 'local':
-        gui.load(params['cfg_path'])
+    #gui.load(params['cfg_path'])
 
     # Get list of processors in signal chain
     numProcessorsBeforeAdd = len(gui.get_processors())
@@ -96,7 +95,7 @@ if __name__ == '__main__':
     parser.add_argument('--mode', required=True, choices={'local', 'githubactions'})
     parser.add_argument('--fetch', required=False, default=True, action='store_true')
     parser.add_argument('--address', required=False, type=str, default='http://127.0.0.1')
-    parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '../configs/file_reader_config.xml'))
+    parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '..//configs//file_reader_config.xml'))
     parser.add_argument('--acq_time', required=False, type=int, default=2)
     parser.add_argument('--rec_time', required=False, type=int, default=5)
     parser.add_argument('--num_rec', required=False, type=int, default=1)

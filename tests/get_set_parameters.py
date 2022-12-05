@@ -16,7 +16,7 @@ def test(gui, params):
     # Set the low pass cutoff frequency in Hz
     testName = "Set low pass cutoff frequency"
     testValue = 350.0
-    gui.set_param(bandpass_filter['id'], 0, 'low_cut', testValue)
+    gui.set_parameter(bandpass_filter['id'], 0, 'low_cut', testValue)
 
     bandpass_filter = gui.get_processors("Bandpass Filter")[0]
 
