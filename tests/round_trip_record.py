@@ -97,7 +97,7 @@ def test(gui, params):
 
             for rec_idx, recording in enumerate(node.recordings):
 
-                for stream in enumerate(recording.continuous):
+                for stream_idx, stream in enumerate(recording.continuous):
                             
                     testName = str(recording.format) + " sample count"
                     SAMPLE_NUM_TOLERANCE = 0.2 * stream.metadata['sample_rate']
@@ -145,7 +145,7 @@ import platform
 from pathlib import Path
 
 if platform.system() == 'Windows':
-    RECORD_PATH = 'C:\\open-ephys\\data'
+    RECORD_PATH = 'D:\\test-suite'
 elif platform.system() == 'Linux':
     RECORD_PATH = '<path/to/linux/runner>' #TODO
 else:
