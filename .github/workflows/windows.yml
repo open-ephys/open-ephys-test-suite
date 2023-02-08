@@ -29,7 +29,7 @@ jobs:
         shell: powershell
         run: |
           Invoke-WebRequest https://openephysgui.jfrog.io/artifactory/Dev/windows/open-ephys-latest-windows-dev.zip -OutFile C:\open-ephys.zip
-          Extract-7Zip -Path C:\open-ephys.zip -DestinationPath C:\open-ephys
+          Extract-7Zip -Path C:\open-ephys.zip -DestinationPath C:\
           New-Item -Path 'C:\open-ephys\data' -ItemType Directory
       - name: Install test-suite
         shell: powershell
