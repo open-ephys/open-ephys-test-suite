@@ -1,7 +1,8 @@
 from open_ephys.control import OpenEphysHTTPServer
 
 import time
-
+import os.path
+from os import path
 """
 Test Name: Add/Delete Processor
 Test Description: Add and delete a processor from the signal chain
@@ -13,7 +14,8 @@ def test(gui, params):
     results = {}
 
     # Load config for this test
-    #gui.load(params['cfg_path'])
+    print(str(path.isfile(params['cfg_path'])))
+    gui.load(params['cfg_path'])
 
     # Get list of processors in signal chain
     numProcessorsBeforeAdd = len(gui.get_processors())
@@ -65,11 +67,6 @@ def test(gui, params):
     else:
         results[testName] = "FAILED\n\tProcessor count before add: " + str(numProcessorsBeforeAdd) + " after: " + str(numProcessorsAfterAdd)
 
-
-    gui.quit()
-
-    time.sleep(2)
-
     return results
 
 '''
@@ -93,9 +90,9 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--mode', required=True, choices={'local', 'githubactions'})
-    parser.add_argument('--fetch', required=False, default=True, action='store_true')
+    parser.add_argument('--fetch', required=False, type=int, default=1)
     parser.add_argument('--address', required=False, type=str, default='http://127.0.0.1')
-    parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '..//configs//file_reader_config.xml'))
+    parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '../configs/file_reader_config.xml'))
     parser.add_argument('--acq_time', required=False, type=int, default=2)
     parser.add_argument('--rec_time', required=False, type=int, default=5)
     parser.add_argument('--num_rec', required=False, type=int, default=1)

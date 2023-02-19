@@ -50,8 +50,6 @@ def test(gui, params):
 
             gui.idle()
 
-        gui.quit()
-
     #Find the expected recordings
     for node, dir in nodeDirectories.items():
         if len(gui.get_latest_recordings(dir, count=2)) == 2:
@@ -82,7 +80,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--mode', required=True, choices={'local', 'githubactions'})
-    parser.add_argument('--fetch', required=False, default=True, action='store_true')
+    parser.add_argument('--fetch', required=True, type=int, default=1)
     parser.add_argument('--address', required=False, type=str, default='http://127.0.0.1')
     parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '../configs/file_reader_config.xml'))
     parser.add_argument('--acq_time', required=False, type=int, default=2)

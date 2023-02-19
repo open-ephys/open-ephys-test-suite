@@ -49,17 +49,17 @@ jobs:
         run: |
           & C:\open-ephys\open-ephys.exe configs\file_reader_config.xml
           Start-Sleep -Seconds 5
-          python tests\get_set_recording_info.py --mode githubactions    
+          python tests\get_set_recording_info.py --mode githubactions --fetch 1
           Get-ChildItem -Path C:\open-ephys\data -Recurse -Directory -Force -ErrorAction SilentlyContinue | Select-Object FullName
       - name: Test Get/Set Parameters
         shell: powershell
         run: |
           & C:\open-ephys\open-ephys.exe configs\file_reader_config.xml
           Start-Sleep -Seconds 5
-          python tests\get_set_parameters.py --mode githubactions    
+          python tests\get_set_parameters.py --mode githubactions --fetch 1
       - name: Test Add/Delete Processors
         shell: powershell
         run: |
           & C:\open-ephys\open-ephys.exe configs\file_reader_config.xml
           Start-Sleep -Seconds 5
-          python tests\add_delete_processors.py --mode githubactions
+          python tests\add_delete_processors.py --mode githubactions --fetch 1

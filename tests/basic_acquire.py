@@ -12,19 +12,29 @@ def test(gui, params):
 
         gui.add_processor('File Reader')
 
-        testName = 'Basic acquisition'
+        testName = 'Start acquisition'
 
         gui.acquire()
         time.sleep(params['acq_time'])
 
-        if gui.status()['mode'] == 'ACQIURE':
+        print(gui.status())
+
+        if gui.status() == 'ACQUIRE':
             results[testName] = "PASSED"
         else:
-            results[testName] = "FAILED\n\tGUI returned mode: {} expected mode: {}" % (gui.status()['mode'], 'ACQUIRE')
+            results[testName] = "FAILED\n\tGUI returned mode: " + gui.status() + " expected: ACQUIRE"
+
+        testName = 'Stop acquisition'
 
         gui.idle()
+        time.sleep(1)
 
-        gui.quit()
+        if gui.status() == 'IDLE':
+            results[testName] = "PASSED"
+        else:
+            results[testName] = "FAILED\n\tGUI returned mode: " + gui.status() + " expected: IDLE"
+
+        gui.clear_signal_chain()
 
     return results
 
@@ -49,11 +59,11 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--mode', required=True, choices={'local', 'githubactions'})
-    parser.add_argument('--fetch', required=False, default=True, action='store_true')
+    parser.add_argument('--fetch', required=False, type=int, default=1)
     parser.add_argument('--address', required=False, type=str, default='http://127.0.0.1')
     parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '../configs/file_reader_config.xml'))
-    parser.add_argument('--acq_time', required=False, type=int, default=10)
-    parser.add_argument('--rec_time', required=False, type=int, default=5)
+    parser.add_argument('--acq_time', required=False, type=int, default=2)
+    parser.add_argument('--rec_time', required=False, type=int, default=2)
     parser.add_argument('--num_rec', required=False, type=int, default=1)
     parser.add_argument('--num_exp', required=False, type=int, default=3)
     parser.add_argument('--prepend_text', required=False, type=str, default='auto')
