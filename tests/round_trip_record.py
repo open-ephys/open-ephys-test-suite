@@ -146,7 +146,7 @@ if platform.system() == 'Windows':
 elif platform.system() == 'Linux':
     RECORD_PATH = '<path/to/linux/runner>' #TODO
 else:
-    RECORD_PATH = '<path/to/mac/runner>' #TODO
+    RECORD_PATH = '/Users/pavelkulik/Projects/Allen/OpenEphys/data/test-suite' 
 
 if __name__ == '__main__':
 
