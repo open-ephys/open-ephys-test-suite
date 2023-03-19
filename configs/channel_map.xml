@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<SETTINGS>
+  <INFO>
+    <VERSION>0.6.4</VERSION>
+    <PLUGIN_API_VERSION>8</PLUGIN_API_VERSION>
+    <DATE>19 Mar 2023 14:24:41</DATE>
+    <OS>Mac OSX 13.0.1</OS>
+    <MACHINE name="Pavels-MBP.lan" cpu_model="Apple M1 Pro" cpu_num_cores="8"/>
+  </INFO>
+  <SIGNALCHAIN>
+    <PROCESSOR name="File Reader" insertionPoint="0" pluginName="File Reader"
+               type="0" index="2" libraryName="" libraryVersion="" processorType="2"
+               nodeId="100">
+      <GLOBAL_PARAMETERS/>
+      <STREAM name="example_data" description="A description of the File Reader Stream"
+              sample_rate="40000.0" channel_count="16">
+        <PARAMETERS/>
+      </STREAM>
+      <CUSTOM_PARAMETERS/>
+      <EDITOR isCollapsed="0" isDrawerOpen="0" displayName="File Reader" activeStream="0"
+              Type="FileReader">
+        <FILENAME path="default" recording="1"/>
+        <TIME_LIMITS start_time="0.0" stop_time="4999.0"/>
+      </EDITOR>
+    </PROCESSOR>
+    <PROCESSOR name="Channel Map" insertionPoint="1" pluginName="Channel Map"
+               type="1" index="1" libraryName="Channel Mapper" libraryVersion="0.1.0"
+               processorType="1" nodeId="101">
+      <GLOBAL_PARAMETERS/>
+      <STREAM name="example_data" description="A description of the File Reader Stream"
+              sample_rate="40000.0" channel_count="12">
+        <PARAMETERS enable_stream="1"/>
+      </STREAM>
+      <CUSTOM_PARAMETERS>
+        <STREAM>
+          <CH index="0" enabled="1"/>
+          <CH index="2" enabled="1"/>
+          <CH index="1" enabled="1"/>
+          <CH index="4" enabled="1"/>
+          <CH index="3" enabled="1"/>
+          <CH index="6" enabled="1"/>
+          <CH index="5" enabled="1"/>
+          <CH index="8" enabled="1"/>
+          <CH index="7" enabled="1"/>
+          <CH index="10" enabled="1"/>
+          <CH index="9" enabled="1"/>
+          <CH index="12" enabled="1"/>
+          <CH index="11" enabled="0"/>
+          <CH index="14" enabled="0"/>
+          <CH index="13" enabled="0"/>
+          <CH index="15" enabled="0"/>
+        </STREAM>
+      </CUSTOM_PARAMETERS>
+      <EDITOR isCollapsed="0" isDrawerOpen="0" displayName="Channel Map" activeStream="0"/>
+    </PROCESSOR>
+    <PROCESSOR name="Record Node" insertionPoint="1" pluginName="Record Node"
+               type="0" index="3" libraryName="" libraryVersion="" processorType="8"
+               nodeId="102">
+      <GLOBAL_PARAMETERS/>
+      <STREAM name="example_data" description="A description of the File Reader Stream"
+              sample_rate="40000.0" channel_count="12">
+        <PARAMETERS enable_stream="1"/>
+      </STREAM>
+      <CUSTOM_PARAMETERS path="/Users/pavelkulik/Documents/Open Ephys" engine="BINARY"
+                         recordEvents="1" recordSpikes="1" fifoMonitorsVisible="1">
+        <STREAM isMainStream="1" sync_line="0" name="example_data" source_node_id="100"
+                sample_rate="40000.0" channel_count="12" recording_state="ALL"/>
+      </CUSTOM_PARAMETERS>
+      <EDITOR isCollapsed="0" isDrawerOpen="0" displayName="Record Node" activeStream="0"/>
+    </PROCESSOR>
+  </SIGNALCHAIN>
+  <EDITORVIEWPORT scroll="0">
+    <FILE_READER ID="100"/>
+    <CHANNEL_MAP ID="101"/>
+    <RECORD_NODE ID="102"/>
+  </EDITORVIEWPORT>
+  <DATAVIEWPORT selectedTab="2"/>
+  <AUDIO sampleRate="44100.0" bufferSize="1024" deviceType="CoreAudio"/>
+  <CONTROLPANEL isOpen="0" recordPath="/Users/pavelkulik/Documents/Open Ephys"
+                recordEngine="BINARY" clockMode="0"/>
+  <AUDIOEDITOR isMuted="0" volume="50.0" noiseGate="0.0"/>
+  <FILENAMECONFIG>
+    <PREPEND state="0" value=""/>
+    <MAIN state="1" value="YYYY-MM-DD_HH-MM-SS"/>
+    <APPEND state="0" value=""/>
+  </FILENAMECONFIG>
+  <PROCESSORLIST>
+    <COLOR ID="801" R="59" G="59" B="59"/>
+    <COLOR ID="804" R="241" G="90" B="41"/>
+    <COLOR ID="802" R="0" G="174" B="239"/>
+    <COLOR ID="803" R="0" G="166" B="81"/>
+    <COLOR ID="805" R="147" G="149" B="152"/>
+    <COLOR ID="806" R="255" G="0" B="0"/>
+    <COLOR ID="807" R="0" G="0" B="0"/>
+  </PROCESSORLIST>
+  <UICOMPONENT isProcessorListOpen="1" isEditorViewportOpen="1"/>
+</SETTINGS>
