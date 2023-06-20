@@ -113,7 +113,7 @@ def test(gui, params):
                         import matplotlib.pyplot as plt
 
                         fig = plt.figure(1)
-                        fig.suptitle(stream.name, fontsize=12)
+                        fig.suptitle(stream.metadata['stream_name'], fontsize=12)
                         ax = fig.add_subplot(params['num_exp'], params['num_rec'], rec_idx+1)
                         ax.plot(stream.timestamps, stream.samples[:,0])
                         ax.set_xlabel('Time [s]')
