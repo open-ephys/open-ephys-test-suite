@@ -58,7 +58,7 @@ import platform
 from pathlib import Path
 
 if platform.system() == 'Windows':
-    RECORD_PATH = 'C:\\open-ephys\\data'
+    RECORD_PATH = 'D:\\test-suite\\data\\new-sub-dir1\\new-sub-dir2'
 elif platform.system() == 'Linux':
     RECORD_PATH = '<path/to/linux/runner>' #TODO
 else:

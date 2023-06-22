@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<SETTINGS>
+  <INFO>
+    <VERSION>0.6.4</VERSION>
+    <PLUGIN_API_VERSION>8</PLUGIN_API_VERSION>
+    <DATE>12 May 2023 17:15:30</DATE>
+    <OS>Windows 10</OS>
+    <MACHINE name="DESKTOP-3CC50O1" cpu_model="Intel(R) Core(TM) i7-9700K CPU @ 3.60GHz"
+             cpu_num_cores="8"/>
+  </INFO>
+  <SIGNALCHAIN>
+    <PROCESSOR name="File Reader" insertionPoint="0" pluginName="File Reader"
+               type="0" index="2" libraryName="" libraryVersion="" processorType="2"
+               nodeId="102">
+      <GLOBAL_PARAMETERS/>
+      <STREAM name="data_stream_16ch_cortex" description="A description of the File Reader Stream"
+              sample_rate="40000.0" channel_count="16">
+        <PARAMETERS/>
+      </STREAM>
+      <CUSTOM_PARAMETERS/>
+      <EDITOR isCollapsed="0" isDrawerOpen="0" displayName="File Reader" activeStream="0"
+              Type="FileReader">
+        <FILENAME path="C:\Users\Pavel\Projects\Allen\OpenEphys\plugin-GUI\Resources\DataFiles\structure.oebin"
+                  recording="2"/>
+        <TIME_LIMITS start_time="0.0" stop_time="4999.0"/>
+      </EDITOR>
+    </PROCESSOR>
+    <PROCESSOR name="Bandpass Filter" insertionPoint="1" pluginName="Bandpass Filter"
+               type="1" index="8" libraryName="Bandpass Filter" libraryVersion="0.1.0"
+               processorType="1" nodeId="110">
+      <GLOBAL_PARAMETERS/>
+      <STREAM name="data_stream_16ch_cortex" description="A description of the File Reader Stream"
+              sample_rate="40000.0" channel_count="16">
+        <PARAMETERS enable_stream="1" high_cut="10.0" low_cut="1.0" Channels=""/>
+      </STREAM>
+      <CUSTOM_PARAMETERS/>
+      <EDITOR isCollapsed="0" isDrawerOpen="0" displayName="Bandpass Filter"
+              activeStream="0"/>
+    </PROCESSOR>
+    <PROCESSOR name="Phase Detector" insertionPoint="1" pluginName="Phase Detector"
+               type="1" index="15" libraryName="Phase Detector" libraryVersion="0.1.0"
+               processorType="1" nodeId="103">
+      <GLOBAL_PARAMETERS/>
+      <STREAM name="data_stream_16ch_cortex" description="A description of the File Reader Stream"
+              sample_rate="40000.0" channel_count="16">
+        <PARAMETERS enable_stream="1" Channel="1" TTL_out="1" gate_line="0" phase="0"/>
+      </STREAM>
+      <CUSTOM_PARAMETERS/>
+      <EDITOR isCollapsed="0" isDrawerOpen="0" displayName="Phase Detector"
+              activeStream="0"/>
+    </PROCESSOR>
+    <PROCESSOR name="Merger" insertionPoint="1" pluginName="Merger" type="0"
+               index="0" libraryName="" libraryVersion="" processorType="5"
+               nodeId="108">
+      <GLOBAL_PARAMETERS/>
+      <STREAM name="data_stream_16ch_cortex" description="A description of the File Reader Stream"
+              sample_rate="40000.0" channel_count="16">
+        <PARAMETERS enable_stream="1"/>
+      </STREAM>
+      <STREAM name="PXIe-6341" description="Analog input channels from a NIDAQ device"
+              sample_rate="30000.0" channel_count="4">
+        <PARAMETERS enable_stream="1"/>
+      </STREAM>
+      <CUSTOM_PARAMETERS>
+        <MERGER NodeA="103" NodeB="109" activePath="1"/>
+      </CUSTOM_PARAMETERS>
+      <EDITOR isCollapsed="0" isDrawerOpen="0" displayName="Merger" activeStream="0"/>
+    </PROCESSOR>
+    <PROCESSOR name="LFP Viewer" insertionPoint="1" pluginName="LFP Viewer"
+               type="1" index="10" libraryName="LFP viewer" libraryVersion="0.1.0"
+               processorType="3" nodeId="107">
+      <GLOBAL_PARAMETERS/>
+      <STREAM name="data_stream_16ch_cortex" description="A description of the File Reader Stream"
+              sample_rate="40000.0" channel_count="16">
+        <PARAMETERS enable_stream="1"/>
+      </STREAM>
+      <STREAM name="PXIe-6341" description="Analog input channels from a NIDAQ device"
+              sample_rate="30000.0" channel_count="4">
+        <PARAMETERS enable_stream="1"/>
+      </STREAM>
+      <CUSTOM_PARAMETERS/>
+      <EDITOR isCollapsed="0" isDrawerOpen="0" displayName="LFP Viewer" activeStream="0"
+              Type="LfpDisplayEditor">
+        <TAB Active="1" Index="3"/>
+        <WINDOW Active="0"/>
+        <VALUES SelectedLayout="4"/>
+        <LFPDISPLAY0 SubprocessorID="10001" Range="250,2000,5.0" Timebase="2.0" Spread="40"
+                     colourScheme="1" colorGrouping="1" spikeRaster="OFF" clipWarning="1"
+                     satWarning="1" reverseOrder="0" sortByDepth="0" channelSkip="1"
+                     showChannelNum="0" subtractOffset="0" isInverted="0" triggerSource="1"
+                     trialAvg="0" singleChannelView="-1" EventButtonState="255" ChannelDisplayState="1111111111111111"
+                     ScrollX="0" ScrollY="0"/>
+        <LFPDISPLAY1 SubprocessorID="10002" Range="250,2000,2.0" Timebase="2.0" Spread="40"
+                     colourScheme="1" colorGrouping="1" spikeRaster="OFF" clipWarning="1"
+                     satWarning="1" reverseOrder="0" sortByDepth="0" channelSkip="1"
+                     showChannelNum="0" subtractOffset="0" isInverted="0" triggerSource="1"
+                     trialAvg="0" singleChannelView="-1" EventButtonState="255" ChannelDisplayState="1111"
+                     ScrollX="0" ScrollY="0"/>
+        <LFPDISPLAY2 SubprocessorID="10001" Range="250,2000,10.0" Timebase="2.0" Spread="40"
+                     colourScheme="1" colorGrouping="1" spikeRaster="OFF" clipWarning="1"
+                     satWarning="1" reverseOrder="0" sortByDepth="0" channelSkip="1"
+                     showChannelNum="0" subtractOffset="0" isInverted="0" triggerSource="1"
+                     trialAvg="0" singleChannelView="-1" EventButtonState="255" ChannelDisplayState="1111111111111111"
+                     ScrollX="0" ScrollY="0"/>
+        <CANVAS doubleVerticalSplitRatio="0.5" doubleHorizontalSplitRatio="0.4783010184764862"
+                tripleHorizontalSplitRatio="0.33,0.66" tripleVerticalSplitRatio="0.33,0.66"
+                showAllOptions="0"/>
+      </EDITOR>
+    </PROCESSOR>
+    <PROCESSOR name="NIDAQ Output" insertionPoint="1" pluginName="NIDAQ Output"
+               type="1" index="12" libraryName="NIDAQ Output" libraryVersion="0.1.0"
+               processorType="3" nodeId="111">
+      <GLOBAL_PARAMETERS/>
+      <STREAM name="data_stream_16ch_cortex" description="A description of the File Reader Stream"
+              sample_rate="40000.0" channel_count="16">
+        <PARAMETERS enable_stream="1"/>
+      </STREAM>
+      <STREAM name="PXIe-6341" description="Analog input channels from a NIDAQ device"
+              sample_rate="30000.0" channel_count="4">
+        <PARAMETERS enable_stream="1"/>
+      </STREAM>
+      <CUSTOM_PARAMETERS/>
+      <EDITOR isCollapsed="0" isDrawerOpen="0" displayName="NIDAQ Output" activeStream="0"
+              device="PXI1Slot4" sampleRate="40000.0" voltageRange="0" numAnalog="0"
+              numDigital="8" digitalWriteSize="8" digitalPortStates="010"/>
+    </PROCESSOR>
+  </SIGNALCHAIN>
+  <SIGNALCHAIN>
+    <PROCESSOR name="NI-DAQmx" insertionPoint="0" pluginName="NI-DAQmx" type="4"
+               index="3" libraryName="NI-DAQmx" libraryVersion="0.3.0" processorType="2"
+               nodeId="109">
+      <GLOBAL_PARAMETERS/>
+      <STREAM name="PXIe-6341" description="Analog input channels from a NIDAQ device"
+              sample_rate="30000.0" channel_count="4">
+        <PARAMETERS/>
+      </STREAM>
+      <CUSTOM_PARAMETERS/>
+      <EDITOR isCollapsed="0" isDrawerOpen="0" displayName="NI-DAQmx" activeStream="0"
+              deviceName="PXI1Slot4" sampleRate="30000.0" voltageRange="3"
+              numAnalog="4" numDigital="8" digitalReadSize="8" digitalPortStates="100"/>
+    </PROCESSOR>
+  </SIGNALCHAIN>
+  <EDITORVIEWPORT scroll="0">
+    <NI-DAQMX ID="109"/>
+    <MERGER ID="108"/>
+    <LFP_VIEWER ID="107"/>
+    <NIDAQ_OUTPUT ID="111"/>
+  </EDITORVIEWPORT>
+  <DATAVIEWPORT selectedTab="3"/>
+  <AUDIO sampleRate="48000.0" bufferSize="1024" deviceType="Windows Audio">
+    <DEVICESETUP deviceType="Windows Audio" audioOutputDeviceName="Headphones (High Definition Audio Device)"
+                 audioInputDeviceName="" audioDeviceRate="48000.0" audioDeviceBufferSize="1024"/>
+  </AUDIO>
+  <CONTROLPANEL isOpen="0" recordPath="C:\Users\Pavel\OneDrive\Documents\Open Ephys"
+                recordEngine="BINARY" clockMode="0"/>
+  <AUDIOEDITOR isMuted="0" volume="50.0" noiseGate="0.0"/>
+  <FILENAMECONFIG>
+    <PREPEND state="0" value=""/>
+    <MAIN state="1" value="YYYY-MM-DD_HH-MM-SS"/>
+    <APPEND state="0" value=""/>
+  </FILENAMECONFIG>
+  <PROCESSORLIST>
+    <COLOR ID="801" R="59" G="59" B="59"/>
+    <COLOR ID="804" R="241" G="90" B="41"/>
+    <COLOR ID="802" R="0" G="174" B="239"/>
+    <COLOR ID="803" R="0" G="166" B="81"/>
+    <COLOR ID="805" R="147" G="149" B="152"/>
+    <COLOR ID="806" R="255" G="0" B="0"/>
+    <COLOR ID="807" R="0" G="0" B="0"/>
+  </PROCESSORLIST>
+  <UICOMPONENT isProcessorListOpen="1" isEditorViewportOpen="1"/>
+</SETTINGS>
