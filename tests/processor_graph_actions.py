@@ -2,10 +2,9 @@ from open_ephys.control import OpenEphysHTTPServer
 
 import os.path
 from os import path
-
 """
-Test Name: Processor Graph Actions
-Test Description: Test the ability to load, add, delete, and clear processors from the signal chain
+Test Name: Add/Delete Processor
+Test Description: Add and delete a processor from the signal chain
 """
 
 def test(gui, params):
