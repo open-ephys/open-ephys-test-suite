@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<SETTINGS>
+  <INFO>
+    <VERSION>0.7.0</VERSION>
+    <PLUGIN_API_VERSION>9</PLUGIN_API_VERSION>
+    <DATE>5 Feb 2024 18:06:22</DATE>
+    <OS>Mac OSX 14.1</OS>
+    <MACHINE name="Pavels-MBP.lan" cpu_model="Apple M3 Max" cpu_num_cores="14"/>
+  </INFO>
+  <SIGNALCHAIN>
+    <PROCESSOR name="File Reader" insertionPoint="0" pluginName="File Reader"
+               type="0" index="2" libraryName="" libraryVersion="" processorType="2"
+               nodeId="100">
+      <PROCESSOR_PARAMETERS selected_file="default" active_stream="0" start_time="00:00:00"
+                            end_time="00:00:04.999"/>
+      <STREAM name="example_data" description="A description of the File Reader Stream"
+              sample_rate="40000.0" channel_count="16">
+        <PARAMETERS enable_stream="1"/>
+      </STREAM>
+      <CUSTOM_PARAMETERS>
+        <SCRUBBERINTERFACE show="false"/>
+      </CUSTOM_PARAMETERS>
+      <EDITOR isCollapsed="0" isDrawerOpen="0" displayName="File Reader" activeStream="0"/>
+    </PROCESSOR>
+    <PROCESSOR name="Frame Grabber" insertionPoint="1" pluginName="Frame Grabber"
+               type="1" index="9" libraryName="Frame Grabber" libraryVersion="0.1.0"
+               processorType="3" nodeId="101">
+      <PROCESSOR_PARAMETERS video_source="0" stream_source="0" image_quality="0" directory_name="/Users/pavelkulik/Documents/Open Ephys"/>
+      <STREAM name="example_data" description="A description of the File Reader Stream"
+              sample_rate="40000.0" channel_count="16">
+        <PARAMETERS enable_stream="1"/>
+      </STREAM>
+      <CUSTOM_PARAMETERS Type="FrameGrabber">
+        <PARAMETERS ImageQuality="0" ColorMode="0" WriteMode="0" ResetFrameCounter="0"
+                    DirectoryName=""/>
+        <DEVICE API="V4L2" Format="TODO"/>
+      </CUSTOM_PARAMETERS>
+      <EDITOR isCollapsed="0" isDrawerOpen="0" displayName="Frame Grabber"
+              activeStream="0" Type="Visualizer">
+        <TAB Active="0" Index="-1"/>
+        <WINDOW Active="0"/>
+        <VISUALIZER_PARAMETERS/>
+        <CUSTOM_PARAMETERS/>
+      </EDITOR>
+    </PROCESSOR>
+    <PROCESSOR name="Record Node" insertionPoint="1" pluginName="Record Node"
+               type="0" index="3" libraryName="" libraryVersion="" processorType="8"
+               nodeId="102">
+      <PROCESSOR_PARAMETERS directory="/Users/pavelkulik/Documents/Open Ephys" engine="0"
+                            events="1" spikes="1" main_sync="0"/>
+      <STREAM name="example_data" description="A description of the File Reader Stream"
+              sample_rate="40000.0" channel_count="16">
+        <PARAMETERS enable_stream="1" channels="" sync_line="1"/>
+      </STREAM>
+      <CUSTOM_PARAMETERS fifoMonitorsVisible="1"/>
+      <EDITOR isCollapsed="0" isDrawerOpen="0" displayName="Record Node" activeStream="0"/>
+    </PROCESSOR>
+  </SIGNALCHAIN>
+  <CONTROLPANEL isOpen="0" recordPath="/Users/pavelkulik/Documents/Open Ephys"
+                recordEngine="BINARY" clockMode="0"/>
+  <AUDIOEDITOR isMuted="0" volume="50.0" noiseGate="0.0"/>
+  <FILENAMECONFIG>
+    <PREPEND state="0" value=""/>
+    <MAIN state="1" value="YYYY-MM-DD_HH-MM-SS"/>
+    <APPEND state="0" value=""/>
+  </FILENAMECONFIG>
+  <EDITORVIEWPORT scroll="0">
+    <FILE_READER ID="100"/>
+    <FRAME_GRABBER ID="101"/>
+    <RECORD_NODE ID="102"/>
+  </EDITORVIEWPORT>
+  <GRAPHVIEWER>
+    <NODE id="100" isProcessorInfoVisible="0">
+      <STREAM key="100|example_data" isStreamVisible="0" isParamsVisible="0"/>
+    </NODE>
+    <NODE id="101" isProcessorInfoVisible="0">
+      <STREAM key="100|example_data" isStreamVisible="0" isParamsVisible="0"/>
+    </NODE>
+    <NODE id="102" isProcessorInfoVisible="0">
+      <STREAM key="100|example_data" isStreamVisible="0" isParamsVisible="0"/>
+    </NODE>
+  </GRAPHVIEWER>
+  <DATAVIEWPORT selectedTab="2"/>
+  <PROCESSORLIST>
+    <COLOR ID="801" R="59" G="59" B="59"/>
+    <COLOR ID="804" R="241" G="90" B="41"/>
+    <COLOR ID="802" R="0" G="174" B="239"/>
+    <COLOR ID="803" R="0" G="166" B="81"/>
+    <COLOR ID="805" R="147" G="149" B="152"/>
+    <COLOR ID="806" R="255" G="0" B="0"/>
+    <COLOR ID="807" R="0" G="0" B="0"/>
+  </PROCESSORLIST>
+  <UICOMPONENT isProcessorListOpen="1" isEditorViewportOpen="1" colorTheme="0"/>
+  <AUDIO sampleRate="44100.0" bufferSize="512" deviceType="CoreAudio">
+    <DEVICESETUP deviceType="CoreAudio" audioOutputDeviceName="Pavel&#8217;s AirPods Pro"
+                 audioInputDeviceName="" audioDeviceRate="48000.0" audioDeviceInChans="0"/>
+  </AUDIO>
+</SETTINGS>
