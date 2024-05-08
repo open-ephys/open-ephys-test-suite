@@ -26,11 +26,16 @@ def test(gui, params):
 
         for idx, engine in enumerate(RECORD_ENGINES):
 
-            params['engine'] = "engine=" + str(idx)
+            gui.set_start_new_dir()
+
+            #params['engine] = "engine+str(idx)"
+            params['engine'] = str(idx)
 
             for node in gui.get_processors("Record Node"):
-                gui.set_record_engine(node['id'], params['engine'])
-                gui.set_record_path(node['id'], params['parent_directory'])
+                #gui.set_record_engine(node['id'], params['engine'])
+                gui.set_processor_parameter(node['id'], 'engine', params['engine'])
+                #gui.set_record_path(node['id'], params['parent_directory'])
+                gui.set_processor_parameter(node['id'], 'directory', params['parent_directory'])
 
                 if engine == 'NWB2': break
 
@@ -146,7 +151,7 @@ if platform.system() == 'Windows':
 elif platform.system() == 'Linux':
     RECORD_PATH = '<path/to/linux/runner>' #TODO
 else:
-    RECORD_PATH = '/Users/pavelkulik/Projects/Allen/OpenEphys/data/test-suite' 
+    RECORD_PATH = '/Volumes/T7'
 
 if __name__ == '__main__':
 
