@@ -1,9 +1,9 @@
 import time
 
+import numpy as np
+
 from open_ephys.control import OpenEphysHTTPServer
 from open_ephys.analysis import Session
-
-import numpy as np
 
 """
 Test Name: Add/Delete Processor
