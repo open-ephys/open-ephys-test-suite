@@ -10,13 +10,15 @@ def test(gui, params):
 
         results = {}
 
-        # Load config for this test
-        if params['mode'] == 'local':
-            gui.load(params['cfg_path'])
+        gui.load(params['cfg_path'])
 
         gui.set_prepend_text(params['prepend_text'])
         gui.set_base_text(params['base_text'])
         gui.set_append_text(params['append_text'])
+
+        time.sleep(3)
+        
+        # Set the parent directory
         gui.set_parent_dir(params['parent_directory'])
 
         # Set all record node engines
@@ -32,7 +34,7 @@ def test(gui, params):
             print("%d : %s" % (node['node_id'], node['parent_directory']))
 
         # Only latest RecordNode will have the newly set parent directory
-        testName = 'Set Recording Locations'
+        testName = 'Set recording names and locations'
 
         # Run some actions and record data
         for n in range(params['num_exp']):
@@ -57,6 +59,13 @@ def test(gui, params):
         else:
             results[testName] = "FAILED\n\tExpected 2 recordings in %s, found %d" % (dir, len(gui.get_latest_recordings(dir, count=2)))
 
+    # reset to default settings
+    gui.set_prepend_text('')
+    gui.set_base_text('auto')
+    gui.set_append_text('')
+
+    #TODO: Make sure resetting to default works
+
     return results
 
 '''
@@ -65,22 +74,13 @@ def test(gui, params):
 import os
 import sys
 import argparse
-import platform
 
 from pathlib import Path
-
-if platform.system() == 'Windows':
-    RECORD_PATH = 'C:\\open-ephys\\data'
-elif platform.system() == 'Linux':
-    RECORD_PATH = '<path/to/linux/runner>' #TODO
-else:
-    RECORD_PATH = '<path/to/mac/runner>' #TODO
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--mode', required=True, choices={'local', 'githubactions'})
-    parser.add_argument('--fetch', required=True, type=int, default=1)
+    parser.add_argument('--fetch', required=False, type=int, default=1)
     parser.add_argument('--address', required=False, type=str, default='http://127.0.0.1')
     parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '../configs/file_reader_config.xml'))
     parser.add_argument('--acq_time', required=False, type=int, default=2)
@@ -90,7 +90,7 @@ if __name__ == '__main__':
     parser.add_argument('--prepend_text', required=False, type=str, default='alice')
     parser.add_argument('--base_text', required=False, type=str, default='test')
     parser.add_argument('--append_text', required=False, type=str, default='auto')
-    parser.add_argument('--parent_directory', required=False, type=str, default=RECORD_PATH)
+    parser.add_argument('--parent_directory', required=False, type=str, default='C:\\open-ephys\\data')
     parser.add_argument('--engine', required=False, type=str, default='engine=0')
 
     params = vars(parser.parse_args(sys.argv[1:]))

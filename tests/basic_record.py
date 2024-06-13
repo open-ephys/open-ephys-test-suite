@@ -6,9 +6,11 @@ from open_ephys.control import OpenEphysHTTPServer
 from open_ephys.analysis import Session
 
 """
-Test Name: Add/Delete Processor
-Test Description: Add and delete a processor from the signal chain
+Test Name: Minimal Recording
+Test Description: Record and check data from the default signal chain
 """
+
+SET_RECORD_PATH = True
 
 def test(gui, params):
 
@@ -18,12 +20,12 @@ def test(gui, params):
     if params['fetch']:
 
         # Load config for this test
-        if params['mode'] == 'local':
-            gui.load(params['cfg_path'])
+        gui.load(params['cfg_path'])
 
-        for node in gui.get_processors("Record Node"):
-            gui.set_record_engine(node['id'], params['engine'])
-            gui.set_record_path(node['id'], params['parent_directory'])
+        if SET_RECORD_PATH:
+            for node in gui.get_processors("Record Node"):
+                gui.set_record_engine(node['id'], params['engine'])
+                gui.set_record_path(node['id'], params['parent_directory'])
 
         # Run some actions and record data
         for _ in range(params['num_exp']):
@@ -40,6 +42,8 @@ def test(gui, params):
     # Validate results
     show = False
     session = Session(gui.get_latest_recordings(params['parent_directory'])[0])
+
+    if show: print(session)
 
     for node_idx, node in enumerate(session.recordnodes):
 
@@ -63,6 +67,12 @@ def test(gui, params):
                 else:
                     results[testName] = "FAILED\nExpected: %d\nActual: %d" % (len(stream.timestamps), params['rec_time']*stream.metadata['sample_rate'])
 
+                #print first few samples, sample_numbers and timestamps in 3 cols
+                if show:
+                    print("Sample Number\tTimestamp\tData")
+                    for i in range(10):
+                        print("%d\t\t%.5f\t\t%.3f" % (stream.sample_numbers[i], stream.timestamps[i], stream.samples[i,1]))
+
     return results
 
 
@@ -76,19 +86,11 @@ import platform
 
 from pathlib import Path
 
-if platform.system() == 'Windows':
-    RECORD_PATH = 'C:\\open-ephys\\data'
-elif platform.system() == 'Linux':
-    RECORD_PATH = '<path/to/linux/runner>' #TODO
-else:
-    RECORD_PATH = '/Users/pavelkulik/Projects/Allen/OpenEphys/data/test-suite'
-
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--mode', required=True, choices={'local', 'githubactions'})
     parser.add_argument('--fetch', required=False, type=int, default=1)
-    parser.add_argument('--address', required=False, type=str, default='http://127.0.0.1')
+    parser.add_argument('--parent_directory', required=False, type=str, default='C:\\open-ephys\\data')
     parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '../configs/file_reader_config.xml'))
     parser.add_argument('--acq_time', required=False, type=int, default=2)
     parser.add_argument('--rec_time', required=False, type=int, default=5)
@@ -97,7 +99,6 @@ if __name__ == '__main__':
     parser.add_argument('--prepend_text', required=False, type=str, default='')
     parser.add_argument('--base_text', required=False, type=str, default='')
     parser.add_argument('--append_text', required=False, type=str, default='')
-    parser.add_argument('--parent_directory', required=False, type=str, default=RECORD_PATH)
     parser.add_argument('--engine', required=False, type=str, default='engine=0')
 
     params = vars(parser.parse_args(sys.argv[1:]))

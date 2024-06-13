@@ -18,9 +18,7 @@ def test(gui, params):
 
     if params['fetch']:
 
-        # Load config for this test
-        if params['mode'] == 'local':
-            gui.load(params['cfg_path'])
+        gui.load(params['cfg_path'])
 
         file_reader = gui.get_processors("File Reader")[0]
 
@@ -118,7 +116,7 @@ def test(gui, params):
                         import matplotlib.pyplot as plt
 
                         fig = plt.figure(1)
-                        fig.suptitle(stream.name, fontsize=12)
+                        fig.suptitle(recording.format, fontsize=12)
                         ax = fig.add_subplot(params['num_exp'], params['num_rec'], rec_idx+1)
                         ax.plot(stream.timestamps, stream.samples[:,0])
                         ax.set_xlabel('Time [s]')
@@ -151,13 +149,12 @@ if platform.system() == 'Windows':
 elif platform.system() == 'Linux':
     RECORD_PATH = '<path/to/linux/runner>' #TODO
 else:
-    RECORD_PATH = '/Volumes/T7'
+    RECORD_PATH = '/Volumes/T7/test-suite'
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--mode', required=True, choices={'local', 'githubactions'})
-    parser.add_argument('--fetch', required=True, type=int, default=1)
+    parser.add_argument('--fetch', required=False, type=int, default=1)
     parser.add_argument('--address', required=False, type=str, default='http://127.0.0.1')
     parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '../configs/file_reader_config.xml'))
     parser.add_argument('--acq_time', required=False, type=int, default=2)
@@ -167,7 +164,7 @@ if __name__ == '__main__':
     parser.add_argument('--prepend_text', required=False, type=str, default='')
     parser.add_argument('--base_text', required=False, type=str, default='')
     parser.add_argument('--append_text', required=False, type=str, default='')
-    parser.add_argument('--parent_directory', required=False, type=str, default=RECORD_PATH)
+    parser.add_argument('--parent_directory', required=False, type=str, default='C:\\open-ephys\\data')
     parser.add_argument('--engine', required=False, type=str, default='engine=0')
 
     params = vars(parser.parse_args(sys.argv[1:]))

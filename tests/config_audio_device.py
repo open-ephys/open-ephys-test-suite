@@ -51,10 +51,12 @@ def test(gui, params):
         gui.idle()
 
         #Record data with various buffer sizes and sample rates
+        BUFFER_SIZES = [512, 1024, 2048, 4096]
+        SAMPLE_RATES = [44100, 48000, 88200, 96000]
 
-        for buffer_size in [512, 1024, 2048, 4096]:
+        for buffer_size in BUFFER_SIZES:
 
-            for sample_rate in [44100, 48000, 88200, 96000]:
+            for sample_rate in SAMPLE_RATES:
 
                 gui.set_buffer_size(buffer_size)
                 gui.set_sample_rate(sample_rate)
@@ -85,7 +87,7 @@ def test(gui, params):
 
                             testName = "Recording %d length" % (rec_idx+1)
 
-                            if abs(stream.data.shape[0] - SAMPLE_RATE * params['rec_time']) < SAMPLE_NUM_TOLERANCE:
+                            if abs(stream.samples.shape[0] - SAMPLE_RATE * params['rec_time']) < SAMPLE_NUM_TOLERANCE:
                                 results[testName] = "PASSED"
                             else:
                                 results[testName] = "FAILED\nExpected: %d\nActual: %d" % (SAMPLE_RATE * params['rec_time'], stream.data.shape[0])
@@ -113,7 +115,6 @@ else:
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--mode', required=True, choices={'local', 'githubactions'})
     parser.add_argument('--fetch', required=False, type=int, default=1)
     parser.add_argument('--address', required=False, type=str, default='http://127.0.0.1')
     parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '../configs/file_reader_config.xml'))

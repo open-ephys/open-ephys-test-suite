@@ -7,8 +7,9 @@ def test(gui, params):
     results = {}
 
     # Load config for this test
-    if params['mode'] == 'local':
-        gui.load(params['cfg_path'])
+    gui.load(params['cfg_path'])
+
+    time.sleep(1)
 
     # Get the first bandpass filter
     bandpass_filter = gui.get_processors("Bandpass Filter")[0]
@@ -16,16 +17,33 @@ def test(gui, params):
     # Set the low pass cutoff frequency in Hz
     testName = "Set low pass cutoff frequency"
     testValue = 350.0
-    gui.set_parameter(bandpass_filter['id'], 0, 'low_cut', testValue)
+    gui.set_stream_parameter(bandpass_filter['id'], 0, 'low_cut', testValue)
+
+    time.sleep(1)
 
     bandpass_filter = gui.get_processors("Bandpass Filter")[0]
+
+    print(bandpass_filter["streams"][0]["parameters"])
 
     for param in bandpass_filter["streams"][0]["parameters"]:
         if param["name"] == 'low_cut':
             if float(param["value"]) == testValue:
                 results[testName] = "PASSED"
             else:
-                results[testName] = "FAILED\n\tLow cut value expected: %d actual: %d" % (str(testValue), param["value"])
+                results[testName] = "FAILED\n\tLow cut value expected: %f actual: %f" % (testValue, float(param["value"]))
+
+    record_node = gui.get_processors("Record Node")[0]
+
+    print(record_node["streams"][0]["parameters"])
+
+    for param in record_node["streams"][0]["parameters"]:
+        if param["name"] == 'record_path':
+            if param["value"] == RECORD_PATH:
+                results["Set record path"] = "PASSED"
+            else:
+                results["Set record path"] = "FAILED\n\tRecord path expected: %s actual: %s" % (RECORD_PATH, param["value"])
+
+    gui.clear_signal_chain()
 
     return results
 
@@ -49,20 +67,8 @@ else:
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--mode', required=True, choices={'local', 'githubactions'})
-    parser.add_argument('--fetch', required=False, type=int, default=1)
-    parser.add_argument('--address', required=False, type=str, default='http://127.0.0.1')
     parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '../configs/file_reader_config.xml'))
-    parser.add_argument('--acq_time', required=False, type=int, default=2)
-    parser.add_argument('--rec_time', required=False, type=int, default=5)
-    parser.add_argument('--num_rec', required=False, type=int, default=1)
-    parser.add_argument('--num_exp', required=False, type=int, default=1)
-    parser.add_argument('--prepend_text', required=False, type=str, default='')
-    parser.add_argument('--base_text', required=False, type=str, default='')
-    parser.add_argument('--append_text', required=False, type=str, default='')
-    parser.add_argument('--parent_directory', required=False, type=str, default=RECORD_PATH)
-    parser.add_argument('--engine', required=False, type=str, default='engine=0')
-
+    parser.add_argument('--parent_directory', required=False, type=str, default='C:\\open-ephys\\data')
     params = vars(parser.parse_args(sys.argv[1:]))
 
     results = test(OpenEphysHTTPServer(), params)
