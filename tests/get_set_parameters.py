@@ -23,8 +23,6 @@ def test(gui, params):
 
     bandpass_filter = gui.get_processors("Bandpass Filter")[0]
 
-    print(bandpass_filter["streams"][0]["parameters"])
-
     for param in bandpass_filter["streams"][0]["parameters"]:
         if param["name"] == 'low_cut':
             if float(param["value"]) == testValue:

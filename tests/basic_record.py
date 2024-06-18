@@ -40,10 +40,7 @@ def test(gui, params):
             gui.idle()
 
     # Validate results
-    show = False
     session = Session(gui.get_latest_recordings(params['parent_directory'])[0])
-
-    if show: print(session)
 
     for node_idx, node in enumerate(session.recordnodes):
 
@@ -55,7 +52,7 @@ def test(gui, params):
 
         for rec_idx, recording in enumerate(node.recordings):
 
-            for str_idx, stream in enumerate(recording.continuous):
+            for _, stream in enumerate(recording.continuous):
 
                 SAMPLE_RATE = stream.metadata['sample_rate']
 
@@ -66,12 +63,6 @@ def test(gui, params):
                     results[testName] = "PASSED"
                 else:
                     results[testName] = "FAILED\nExpected: %d\nActual: %d" % (len(stream.timestamps), params['rec_time']*stream.metadata['sample_rate'])
-
-                #print first few samples, sample_numbers and timestamps in 3 cols
-                if show:
-                    print("Sample Number\tTimestamp\tData")
-                    for i in range(10):
-                        print("%d\t\t%.5f\t\t%.3f" % (stream.sample_numbers[i], stream.timestamps[i], stream.samples[i,1]))
 
     return results
 
