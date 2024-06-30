@@ -10,8 +10,6 @@ Test Name: Minimal Recording
 Test Description: Record and check data from the default signal chain
 """
 
-SET_RECORD_PATH = True
-
 def test(gui, params):
 
     results = {}
@@ -22,10 +20,9 @@ def test(gui, params):
         # Load config for this test
         gui.load(params['cfg_path'])
 
-        if SET_RECORD_PATH:
-            for node in gui.get_processors("Record Node"):
-                gui.set_record_engine(node['id'], params['engine'])
-                gui.set_record_path(node['id'], params['parent_directory'])
+        for node in gui.get_processors("Record Node"):
+            gui.set_record_engine(node['id'], params['engine'])
+            gui.set_record_path(node['id'], params['parent_directory'])
 
         # Run some actions and record data
         for _ in range(params['num_exp']):

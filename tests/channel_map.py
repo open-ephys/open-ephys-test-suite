@@ -17,9 +17,11 @@ def test(gui, params):
     # Fetch fresh data if needed
     if params['fetch']:
 
-        # Load config for this test
-        if params['mode'] == 'local':
-            gui.load(params['cfg_path'])
+        gui.load(params['cfg_path'])
+
+        for node in gui.get_processors("Record Node"):
+            gui.set_record_engine(node['id'], params['engine'])
+            gui.set_record_path(node['id'], params['parent_directory'])
 
         gui.acquire()
         time.sleep(params['acq_time'])
@@ -31,6 +33,8 @@ def test(gui, params):
     # Validate results
     show = False
     session = Session(gui.get_latest_recordings(params['parent_directory'])[0])
+
+    print(session)
 
     rec = session.recordnodes[0].recordings[0]
     num_samples,num_channels = rec.continuous[0].samples.shape
@@ -64,7 +68,6 @@ else:
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--mode', required=True, choices={'local', 'githubactions'})
     parser.add_argument('--fetch', required=False, type=int, default=1)
     parser.add_argument('--address', required=False, type=str, default='http://127.0.0.1')
     parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '../configs/channel_map.xml'))
