@@ -41,25 +41,34 @@ def test(gui, params):
 
     for node_idx, node in enumerate(session.recordnodes):
 
+        # Validate total number of recordings
         testName = "Total recordings"
-        if len(node.recordings) == params['num_rec']*params['num_exp']:
-            results[testName] = "PASSED"
-        else:
-            results[testName] = "FAILED\nExpected: %d\nActual: %d" % (params['num_rec']*params['num_exp'], len(node.recordings))
+        condition = len(node.recordings) == params['num_rec']*params['num_exp']
+        if condition: results[testName] = "PASSED"
+        else: results[testName] = "FAILED\nExpected: %d\nActual: %d" % (params['num_rec']*params['num_exp'], len(node.recordings))
 
         for rec_idx, recording in enumerate(node.recordings):
 
             for _, stream in enumerate(recording.continuous):
 
                 SAMPLE_RATE = stream.metadata['sample_rate']
-
                 SAMPLE_NUM_TOLERANCE = 0.1 * SAMPLE_RATE
 
+                # Validate amount of continuous data recorded is within range
                 testName = "Recording %d length" % (rec_idx+1)
-                if np.absolute(len(stream.timestamps) - params['rec_time']*SAMPLE_RATE) < SAMPLE_NUM_TOLERANCE:
-                    results[testName] = "PASSED"
-                else:
-                    results[testName] = "FAILED\nExpected: %d\nActual: %d" % (len(stream.timestamps), params['rec_time']*stream.metadata['sample_rate'])
+                condition = np.absolute(len(stream.timestamps) - params['rec_time']*SAMPLE_RATE) < SAMPLE_NUM_TOLERANCE
+                if condition: results[testName] = "PASSED"
+                else: results[testName] = "FAILED\nExpected: %d\nActual: %d" % (len(stream.timestamps), params['rec_time']*stream.metadata['sample_rate'])
+
+                # Validate spikes were written in the second record node
+                testName = "Spikes recorded"
+                condition = node_idx  == 1 and len(recording.spikes) > 0
+                if condition: results[testName] = "PASSED"
+                else: results[testName] = "FAILED\nExpected: >0\nActual: %d" % len(recording.spikes)
+
+                # TODO: Save spike data to be used to verify channel mapper downstream.
+                for spike_channel in recording.spikes:
+                    print(f"{spike_channel.metadata['name']} : {len(spike_channel.sample_numbers)} spikes")
 
     return results
 

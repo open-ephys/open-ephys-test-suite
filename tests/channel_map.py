@@ -36,14 +36,22 @@ def test(gui, params):
 
     print(session)
 
-    rec = session.recordnodes[0].recordings[0]
-    num_samples,num_channels = rec.continuous[0].samples.shape
+    recording = session.recordnodes[1].recordings[0]
+    num_samples,num_channels = recording.continuous[0].samples.shape
     print(f'Num channels: {num_channels} Num samples: {num_samples}')
+
     testName = "Total channels recorded"
-    if num_channels == 12:
-      results[testName] = "PASSED"
-    else:
-      results[testName] = "FAILED\nExpected: %d\nActual: %d" % (12, num_channels)
+    condition = num_channels == 14
+    if condition: results[testName] = "PASSED"
+    else: results[testName] = "FAILED\nExpected: %d\nActual: %d" % (12, num_channels)
+
+    testName = "Spikes recorded"
+    condition = len(recording.spikes) > 0
+    if condition: results[testName] = "PASSED"
+    else: results[testName] = "FAILED\nExpected: >0\nActual: %d" % len(recording.spikes)
+
+    for spike_channel in recording.spikes:
+        print(f"{spike_channel.metadata['name']} : {len(spike_channel.sample_numbers)} spikes")
 
     return results
 
