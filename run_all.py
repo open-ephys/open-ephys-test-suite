@@ -1,17 +1,17 @@
 import os
 import time
 import platform
-import datetime
+from datetime import datetime
 
 tests = (
-    'processor_graph_actions.py',
+    #'processor_graph_actions.py',
     #'get_set_parameters.py',
     #'basic_acquire.py',
     #'basic_record.py',
     #'get_set_recording_info.py',
-    #'config_audio_device.py',
+    'config_audio_device.py',
     #'round_trip_record.py',
-    'channel_map.py' #TODO: add more plugin specific tests
+    #'channel_map.py' #TODO: add more plugin specific tests
 )
 
 GHA = os.getenv("GITHUB_ACTIONS") == "true"

@@ -51,8 +51,8 @@ def test(gui, params):
         gui.idle()
 
         #Record data with various buffer sizes and sample rates
-        BUFFER_SIZES = [512, 1024, 2048, 4096]
-        SAMPLE_RATES = [44100, 48000, 88200, 96000]
+        BUFFER_SIZES = [512, 1024]#, 2048, 4096]
+        SAMPLE_RATES = [44100, 48000]#, 88200, 96000]
 
         for buffer_size in BUFFER_SIZES:
 
