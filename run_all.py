@@ -4,12 +4,12 @@ import platform
 from datetime import datetime
 
 gui_tests = (
-    #'processor_graph_actions.py',
-    #'get_set_parameters.py',
-    #'basic_acquire.py',
+    'processor_graph_actions.py',
+    'get_set_parameters.py',
+    'basic_acquire.py',
     'basic_record.py',
-    #'get_set_recording_info.py',
-    #'config_audio_device.py',
+    'get_set_recording_info.py',
+    'config_audio_device.py',
     #'round_trip_record.py',
 )
 

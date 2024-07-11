@@ -11,51 +11,70 @@ def test(gui, params):
 
     results = {}
 
+    with open(params['cfg_path'], 'r', encoding='utf-8') as file:
+        gt_config = file.read()
+
+    testName = 'Clear signal chain'
+
+    gui.clear_signal_chain()
+
+    condition = len(gui.get_processors()) == 0
+    if condition: results[testName] = "PASSED"
+    else: results[testName] = "FAILED\n\tProcessor count: " + str(len(gui.get_processors()))
+
+    testName = 'Load signal chain'
+
     gui.load(params['cfg_path'])
 
-    numProcessorsBeforeAdd = len(gui.get_processors())
+    loaded_config = gui.get_config()
+
+    condition = len(gui.get_processors()) > 0
+    if condition: results[testName] = "PASSED"
+    else: results[testName] = "FAILED\n\tProcessor count: " + str(len(gui.get_processors()))
+
+    #TODO: compare to gt_config to validate load, ignoring local tags
+    #print(gui.get_config()['info'] == gt_config)
+
+    testName = 'Save configuration'
+
+    full_path = '/Volumes/T7/test-suite/testConfig3.xml'
+    gui.save(full_path)
+
+    condition = os.path.exists(full_path)
+    if condition: results[testName] = "PASSED"
+    else: results[testName] = "FAILED\n\tFile not saved"
 
     testName = 'Add processor to an existing chain'
+
+    numProcessorsBeforeAdd = len(gui.get_processors())
     gui.add_processor("Bandpass Filter")
 
     numProcessorsAfterAdd = len(gui.get_processors())
 
-    if numProcessorsAfterAdd == numProcessorsBeforeAdd + 1:
-        results[testName] = "PASSED"
-    else:
-        results[testName] = "FAILED\n\tProcessor count before add: " + str(numProcessorsBeforeAdd) + " after: " + str(numProcessorsAfterAdd)
+    condition = numProcessorsAfterAdd == numProcessorsBeforeAdd + 1
+    if condition: results[testName] = "PASSED"
+    else: results[testName] = "FAILED\n\tProcessor count before add: " + str(numProcessorsBeforeAdd) + " after: " + str(numProcessorsAfterAdd)
 
     testName = 'Delete processor'
+
     mostRecentlyAddedProcessorId = max(gui.get_processors(), key=lambda processor: processor['id'])['id']
     gui.delete_processor(mostRecentlyAddedProcessorId)
 
     numProcessorsBeforeDelete = numProcessorsAfterAdd
     numProcessorsAfterDelete = len(gui.get_processors())
 
-    if numProcessorsAfterDelete == numProcessorsBeforeDelete - 1:
-        results[testName] = "PASSED"
-    else:
-        results[testName] = "FAILED\n\tProcessor count before delete: " + str(numProcessorsBeforeDelete) + " after: " + str(numProcessorsAfterDelete)
-
-    testName = 'Clear the signal chain'
-    gui.clear_signal_chain()
-
-    numProcessorsBeforeClear = numProcessorsAfterDelete
-    numProcessorsAfterClear = len(gui.get_processors())
-    if numProcessorsAfterClear == 0:
-        results[testName] = "PASSED"
-    else:
-        results[testName] = "FAILED\n\tProcessor count before clear: " + str(numProcessorsBeforeClear) + " after: " + str(numProcessorsAfterClear)
+    condition = numProcessorsAfterDelete == numProcessorsBeforeDelete - 1
+    if condition: results[testName] = "PASSED"
+    else: results[testName] = "FAILED\n\tProcessor count before delete: " + str(numProcessorsBeforeDelete) + " after: " + str(numProcessorsAfterDelete)
 
     testName = 'Add processor to empty signal chain'
 
-    numProcessorsBeforeAdd = numProcessorsAfterClear
+    numProcessorsBeforeAdd = numProcessorsAfterDelete
     gui.add_processor("File Reader")
     numProcessorsAfterAdd = len(gui.get_processors())
-    if numProcessorsAfterAdd == numProcessorsBeforeAdd + 1:
-        results[testName] = "PASSED"
-    else:
-        results[testName] = "FAILED\n\tProcessor count before add: " + str(numProcessorsBeforeAdd) + " after: " + str(numProcessorsAfterAdd)
+    condition = numProcessorsAfterAdd == numProcessorsBeforeAdd + 1
+    if condition: results[testName] = "PASSED"
+    else: results[testName] = "FAILED\n\tProcessor count before add: " + str(numProcessorsBeforeAdd) + " after: " + str(numProcessorsAfterAdd)
 
     return results
 

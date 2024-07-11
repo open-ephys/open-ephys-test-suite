@@ -1,15 +1,11 @@
 from open_ephys.control import OpenEphysHTTPServer
 
-import time
-
 def test(gui, params):
 
     results = {}
 
     # Load config for this test
     gui.load(params['cfg_path'])
-
-    time.sleep(1)
 
     # Get the first bandpass filter
     bandpass_filter = gui.get_processors("Bandpass Filter")[0]
@@ -19,27 +15,23 @@ def test(gui, params):
     testValue = 350.0
     gui.set_stream_parameter(bandpass_filter['id'], 0, 'low_cut', testValue)
 
-    time.sleep(1)
-
     bandpass_filter = gui.get_processors("Bandpass Filter")[0]
 
     for param in bandpass_filter["streams"][0]["parameters"]:
         if param["name"] == 'low_cut':
-            if float(param["value"]) == testValue:
-                results[testName] = "PASSED"
-            else:
-                results[testName] = "FAILED\n\tLow cut value expected: %f actual: %f" % (testValue, float(param["value"]))
+            condition = float(param["value"]) == testValue
+            if condition: results[testName] = "PASSED"
+            else: results[testName] = "FAILED\n\tLow pass cutoff frequency expected: %s actual: %s" % (testValue, param["value"])
 
     record_node = gui.get_processors("Record Node")[0]
 
-    print(record_node["streams"][0]["parameters"])
+    #print(record_node["streams"][0]["parameters"])
 
     for param in record_node["streams"][0]["parameters"]:
         if param["name"] == 'record_path':
-            if param["value"] == RECORD_PATH:
-                results["Set record path"] = "PASSED"
-            else:
-                results["Set record path"] = "FAILED\n\tRecord path expected: %s actual: %s" % (RECORD_PATH, param["value"])
+            condition = param["value"] == RECORD_PATH
+            if condition: results["Set record path"] = "PASSED"
+            else: results["Set record path"] = "FAILED\n\tRecord path expected: %s actual: %s" % (RECORD_PATH, param["value"])
 
     gui.clear_signal_chain()
 

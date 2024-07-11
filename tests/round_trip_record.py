@@ -6,8 +6,6 @@ import numpy as np
 import time
 import os
 
-import numpy as np
-
 def test(gui, params):
 
     results = {}
@@ -30,9 +28,9 @@ def test(gui, params):
             params['engine'] = str(idx)
 
             for node in gui.get_processors("Record Node"):
-                #gui.set_record_engine(node['id'], params['engine'])
+                #gui.set_record_engine(node['id'], params['engine']) (Equivalent to the next line)
                 gui.set_processor_parameter(node['id'], 'engine', params['engine'])
-                #gui.set_record_path(node['id'], params['parent_directory'])
+                #gui.set_record_path(node['id'], params['parent_directory']) (Equivalent to the next line)
                 gui.set_processor_parameter(node['id'], 'directory', params['parent_directory'])
 
                 if engine == 'NWB2': break
@@ -56,7 +54,7 @@ def test(gui, params):
 
             print(path)
             
-            if engine != 'NWB2':
+            if engine != 'NWB2': #TODO: Enable multi-threaded recording for NWB2
 
                 session = Session(path)
 
@@ -90,10 +88,10 @@ def test(gui, params):
 
             # Check total number of recordings
             testName = 'Total number of recordings'
-            if params['num_rec']*params['num_exp'] == len(node.recordings):
-                results[testName] = "PASSED"
-            else:
-                results[testName] = "FAILED\n\tExpected number of recordings: %d actual: %d" % (params['num_rec']*params['num_exp'], len(node.recordings))
+
+            condition = len(node.recordings) == params['num_rec']*params['num_exp']
+            if condition: results[testName] = "PASSED"
+            else: results[testName] = "FAILED\n\tExpected number of recordings: %d actual: %d" % (params['num_rec']*params['num_exp'], len(node.recordings))
 
             for rec_idx, recording in enumerate(node.recordings):
 
@@ -105,10 +103,9 @@ def test(gui, params):
                     actual = len(stream.timestamps)
                     expected = int(params['rec_time']*stream.metadata['sample_rate'])
 
-                    if np.absolute(actual - expected) < SAMPLE_NUM_TOLERANCE:
-                        results[testName] = "PASSED"
-                    else:
-                        results[testName] = "FAILED\n\tExpected number of samples %d != %d" % (actual, expected)
+                    condition = np.absolute(actual - expected) < SAMPLE_NUM_TOLERANCE
+                    if condition: results[testName] = "PASSED"
+                    else: results[testName] = "FAILED\n\tExpected number of samples %d != %d" % (actual, expected)
 
                     show = False
                     if show:

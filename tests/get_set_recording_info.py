@@ -54,10 +54,9 @@ def test(gui, params):
 
     #Find the expected recordings
     for node, dir in nodeDirectories.items():
-        if len(gui.get_latest_recordings(dir, count=2)) == 2:
-            results[testName] = "PASSED"
-        else:
-            results[testName] = "FAILED\n\tExpected 2 recordings in %s, found %d" % (dir, len(gui.get_latest_recordings(dir, count=2)))
+        condition = len(gui.get_latest_recordings(dir, count=2)) == 2
+        if condition: results["Recording write path for node %d" % node] = "PASSED"
+        else: results["Recording write path for node %d" % node] = f"FAILED"
 
     # reset to default settings
     gui.set_prepend_text('')

@@ -1,13 +1,14 @@
 import time
 
 import numpy as np
+import json
 
 from open_ephys.control import OpenEphysHTTPServer
 from open_ephys.analysis import Session
 
 """
 Test Name: Audio Device Test
-Test Description: Configures the buffer size and sample rate of the audio device and validates recordings
+Test Description: Configures available audio devices and validates recordings
 """
 
 def test(gui, params):
@@ -16,49 +17,79 @@ def test(gui, params):
 
     if params['fetch']:
 
-        #Attempt to change the buffer size and sample rate during acquisition
+        testName = 'Has available audio device'
+
+        available_audio_devices = gui.get_audio_devices()
+
+        condition = len(available_audio_devices) > 0
+        if condition: results[testName] = "PASSED"
+        else: results[testName] = "FAILED\n\tNo audio devices found"
+
+        testName = 'Get audio device settings'
+
+        audio_settings = gui.get_audio_settings()
+
+        available_buffer_sizes = audio_settings['available_buffer_sizes']
+        available_sample_rates = audio_settings['available_sample_rates']
+
+        device_type = audio_settings['device_type']
+        device_name = audio_settings['device_name']
+        buffer_size = audio_settings['buffer_size']
+        sample_rate = audio_settings['sample_rate']
+
+        #print("Current device type: %s" % device_type)
+        #print("Current device name: %s" % device_name)
+        #print("Current buffer size: %d" % buffer_size)
+        #print("Current sample rate: %d" % sample_rate)
 
         gui.clear_signal_chain()
         gui.add_processor("File Reader")
         gui.add_processor("Record Node")
+
+        record_node = gui.get_processors("Record Node")[0]
+        gui.set_record_engine(record_node['id'], params['engine'])
+        gui.set_record_path(record_node['id'], params['parent_directory'])
 
         test_name = 'Prevent buffer size change during acquisition'
 
         gui.acquire()
 
         original_buffer_size = gui.get_audio_settings('buffer_size')
-        gui.set_buffer_size(512)
-        time.sleep(1)
+        gui.set_buffer_size(available_buffer_sizes[-1])
         new_buffer_size = gui.get_audio_settings('buffer_size')
 
-        if new_buffer_size != original_buffer_size:
-            results[test_name] = "FAILED\n\tExpected: %d\n\tActual: %d" % (original_buffer_size, new_buffer_size)
-        else:
-            results[test_name] = "PASSED"
+        condition = new_buffer_size == original_buffer_size
+        if condition: results[test_name] = "PASSED"
+        else: results[test_name] = "FAILED\n\tExpected: %d\n\tActual: %d" % (original_buffer_size, new_buffer_size)
 
         test_name = 'Prevent sample rate change during acquisition'
 
         original_sample_rate = gui.get_audio_settings('sample_rate')
-        gui.set_sample_rate(48000)
-        time.sleep(1)
+        gui.set_sample_rate(available_sample_rates[0])
         new_sample_rate = gui.get_audio_settings('sample_rate')
 
-        if new_sample_rate != original_sample_rate:
-            results[test_name] = "FAILED\n\tExpected: %d\n\tActual: %d" % (original_sample_rate, new_sample_rate)
-        else:
-            results[test_name] = "PASSED"
+        condition = new_sample_rate == original_sample_rate
+        if condition: results[test_name] = "PASSED"
+        else: results[test_name] = "FAILED\n\tExpected: %d\n\tActual: %d" % (original_sample_rate, new_sample_rate)
 
         gui.idle()
 
-        #Record data with various buffer sizes and sample rates
-        BUFFER_SIZES = [512, 1024]#, 2048, 4096]
-        SAMPLE_RATES = [44100, 48000]#, 88200, 96000]
+        #Record data with min and max available buffer sizes and sample rates
+        BUFFER_SIZES = [available_buffer_sizes[0], available_buffer_sizes[-1]]
+        SAMPLE_RATES = [available_sample_rates[0], available_sample_rates[-1]]
+
+        #Test current audio device min and max settings
+        #TODO: Iterate over all available audio API types and devices
+        #gui.set_device_type('Core Audio')
+        #gui.set_device_name('Scarlett 2i4 USB')
+        record_count = 0
 
         for buffer_size in BUFFER_SIZES:
 
+            gui.set_buffer_size(buffer_size)
+
             for sample_rate in SAMPLE_RATES:
 
-                gui.set_buffer_size(buffer_size)
                 gui.set_sample_rate(sample_rate)
 
                 for _ in range(params['num_exp']):
@@ -75,23 +106,23 @@ def test(gui, params):
                 # Validate results
                 session = Session(gui.get_latest_recordings(params['parent_directory'])[0])
 
-                for node_idx, node in enumerate(session.recordnodes):
+                for _, node in enumerate(session.recordnodes):
 
-                    for rec_idx, recording in enumerate(node.recordings):
+                    latest_recording = node.recordings[-1]
 
-                        for str_idx, stream in enumerate(recording.continuous):
+                    for _, stream in enumerate(latest_recording.continuous):
 
-                            SAMPLE_RATE = stream.metadata['sample_rate']
+                        SAMPLE_RATE = stream.metadata['sample_rate']
 
-                            SAMPLE_NUM_TOLERANCE = 0.1 * SAMPLE_RATE
+                        SAMPLE_NUM_TOLERANCE = 0.025 * SAMPLE_RATE*params['rec_time']
 
-                            testName = "Recording %d length" % (rec_idx+1)
+                        testName = f"Recording {record_count+1} with buffer size {buffer_size} and sample rate {sample_rate}"
 
-                            if abs(stream.samples.shape[0] - SAMPLE_RATE * params['rec_time']) < SAMPLE_NUM_TOLERANCE:
-                                results[testName] = "PASSED"
-                            else:
-                                results[testName] = "FAILED\nExpected: %d\nActual: %d" % (SAMPLE_RATE * params['rec_time'], stream.data.shape[0])
-        
+                        condition = abs(stream.samples.shape[0] - SAMPLE_RATE * params['rec_time']) < SAMPLE_NUM_TOLERANCE
+                        if condition: results[testName] = "PASSED"
+                        else: results[testName] = "FAILED\n\tExpected: %d\n\tActual: %d" % (SAMPLE_RATE * params['rec_time'], stream.samples.shape[0])
+
+                        record_count += 1
 
     return results
 
