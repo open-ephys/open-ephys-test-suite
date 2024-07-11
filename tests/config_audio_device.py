@@ -98,8 +98,11 @@ def test(gui, params):
 
                         gui.acquire()
                         time.sleep(params['acq_time'])
+                        cpu_acquire = gui.get_cpu_usage()
+
                         gui.record()
                         time.sleep(params['rec_time'])
+                        cpu_record = gui.get_cpu_usage()
 
                     gui.idle()
 
@@ -116,7 +119,8 @@ def test(gui, params):
 
                         SAMPLE_NUM_TOLERANCE = 0.025 * SAMPLE_RATE*params['rec_time']
 
-                        testName = f"Recording {record_count+1} with buffer size {buffer_size} and sample rate {sample_rate}"
+                        testName = f"Recording w/ buffer size {buffer_size} sample rate {sample_rate}"
+                        testName += f"| % CPU: Acquire {100 * float(cpu_acquire['usage']):.1f} Record {100 * float(cpu_record['usage']):.1f}"
 
                         condition = abs(stream.samples.shape[0] - SAMPLE_RATE * params['rec_time']) < SAMPLE_NUM_TOLERANCE
                         if condition: results[testName] = "PASSED"
@@ -164,4 +168,4 @@ if __name__ == '__main__':
     results = test(OpenEphysHTTPServer(), params)
 
     for test, result in results.items():
-        print(test, '-'*(80-len(test)), result)
+        print(test, '-'*(100-len(test)), result)
