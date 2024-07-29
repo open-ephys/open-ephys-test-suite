@@ -1,4 +1,5 @@
 import time
+import psutil
 
 import numpy as np
 import json
@@ -97,14 +98,18 @@ def test(gui, params):
                     for _ in range(params['num_rec']):
 
                         gui.acquire()
-                        time.sleep(params['acq_time'])
-                        cpu_acquire = gui.get_cpu_usage()
+                        ps_acquire_cpu = psutil.cpu_percent(interval=params['acq_time'])
+                        gui_acquire_cpu = gui.get_cpu_usage()
+                        latency_acquire = gui.get_latencies()
 
                         gui.record()
-                        time.sleep(params['rec_time'])
-                        cpu_record = gui.get_cpu_usage()
+                        ps_record_cpu = psutil.cpu_percent(interval=params['rec_time'])
+                        gui_record_cpu = gui.get_cpu_usage()
+                        latency_record = gui.get_latencies()
 
                     gui.idle()
+
+                    time.sleep(1)
 
                 # Validate results
                 session = Session(gui.get_latest_recordings(params['parent_directory'])[0])
@@ -119,8 +124,21 @@ def test(gui, params):
 
                         SAMPLE_NUM_TOLERANCE = 0.025 * SAMPLE_RATE*params['rec_time']
 
-                        testName = f"Recording w/ buffer size {buffer_size} sample rate {sample_rate}"
-                        testName += f"| % CPU: Acquire {100 * float(cpu_acquire['usage']):.1f} Record {100 * float(cpu_record['usage']):.1f}"
+                        testName = '----------------------------------------------------------------------------------------------------------------\n'
+                        testName += f"Recording w/ buffer size {buffer_size} sample rate {sample_rate}\n"
+                        testName += '----------------------------------------------------------------------------------------------------------------\n'
+                        testName += f"% GUI CPU: Acquire {100 * float(gui_acquire_cpu['usage']):.1f} Record {100 * float(gui_record_cpu['usage']):.1f}\n"
+                        testName += f"% PS CPU: Acquire {ps_acquire_cpu:.1f} Record {ps_record_cpu:.1f}\n"
+                        testName += f"Latency: Acquire\n"
+                        for processor in latency_acquire['processors']:
+                            testName += f"\t{processor['name']}: {processor['id']}\n"
+                            for data_stream in processor['streams']:
+                                testName += f"\t\t{data_stream['name']}: {1000*data_stream['latency']:.1f} us\n"
+                        testName += f"Latency: Record\n"
+                        for processor in latency_record['processors']:
+                            testName += f"\t{processor['name']}: {processor['id']}\n"
+                            for data_stream in processor['streams']:
+                                testName += f"\t\t{data_stream['name']}: {1000*data_stream['latency']:.1f} us\n"
 
                         condition = abs(stream.samples.shape[0] - SAMPLE_RATE * params['rec_time']) < SAMPLE_NUM_TOLERANCE
                         if condition: results[testName] = "PASSED"
