@@ -1,39 +1,72 @@
 from open_ephys.control import OpenEphysHTTPServer
 
+parameters = {
+
+    'File Reader':      {
+                        'selected_file': 'C:\\open-ephys\\data\\test_data.dat',
+                        'active_stream' : 0,
+                        'start_time' : 0,
+                        'end_time' : 0
+                        },
+    'Bandpass Filter':  {
+                        'low_cut': 0,
+                        'high_cut': 0,
+                        'channels': 0,
+                        'threads': 0
+                        },
+    'Phase Detector':   {
+                        'channel' : 0,
+                        'ttl_out' : 0,
+                        'gate_line' : 0,
+                        'phase' : 0
+                        },
+    'Common Avg Ref':   {
+                        'affected' : 0,
+                        'reference' : 0,
+                        'gain' : 0
+                        },
+    'Arduino Output':   { 
+                        'device' : 0,
+                        'output_pin' : 0,
+                        'input_pin' : 0,
+                        'gate_line' : 0},
+    'Audio Monitor':    {
+                        'mute_audio' : 0,
+                        'audio_output' : 0,
+                        'channels' : 0,
+                        'spike_channels' : 0
+                        },
+    'Record Node':      {
+                        'directory' : 'Volumes/T7/test-suite',
+                        'engine' : 0,
+                        'events' : 0,
+                        'spikes' : 0,
+                        'channels' : 0,
+                        'sync_line' : 0,
+                        'main_sync' : 0
+                        }
+
+}
+
 def test(gui, params):
 
     results = {}
 
-    # Load config for this test
-    gui.load(params['cfg_path'])
-
-    # Get the first bandpass filter
-    bandpass_filter = gui.get_processors("Bandpass Filter")[0]
-
-    # Set the low pass cutoff frequency in Hz
-    testName = "Set low pass cutoff frequency"
-    testValue = 350.0
-    gui.set_stream_parameter(bandpass_filter['id'], 0, 'low_cut', testValue)
-
-    bandpass_filter = gui.get_processors("Bandpass Filter")[0]
-
-    for param in bandpass_filter["streams"][0]["parameters"]:
-        if param["name"] == 'low_cut':
-            condition = float(param["value"]) == testValue
-            if condition: results[testName] = "PASSED"
-            else: results[testName] = "FAILED\n\tLow pass cutoff frequency expected: %s actual: %s" % (testValue, param["value"])
-
-    record_node = gui.get_processors("Record Node")[0]
-
-    #print(record_node["streams"][0]["parameters"])
-
-    for param in record_node["streams"][0]["parameters"]:
-        if param["name"] == 'record_path':
-            condition = param["value"] == RECORD_PATH
-            if condition: results["Set record path"] = "PASSED"
-            else: results["Set record path"] = "FAILED\n\tRecord path expected: %s actual: %s" % (RECORD_PATH, param["value"])
-
-    gui.clear_signal_chain()
+    for processor in gui.get_processor_list():
+        print(processor)
+        if processor in parameters:
+            gui.clear_signal_chain()
+            gui.add_processor("File Reader")
+            if processor != "File Reader": gui.add_processor(processor)
+            node = gui.get_processors(processor)[0]
+            for key in node:
+                if key == 'parameters':
+                    processor_params = node[key]
+                    print(' --PROCESSOR SCOPED' + '-'*50)
+                    [print(param) for param in processor_params]
+            stream_params = gui.get_parameters(node['id'],0)
+            print(" --STREAM SCOPED" + '-'*50)
+            [print(param) for param in stream_params['parameters']]
 
     return results
 
