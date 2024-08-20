@@ -18,20 +18,16 @@ def test(gui, params):
         gui.acquire()
         time.sleep(params['acq_time'])
 
-        if gui.status() == 'ACQUIRE':
-            results[testName] = "PASSED"
-        else:
-            results[testName] = "FAILED\n\tGUI returned mode: " + gui.status() + " expected: ACQUIRE"
+        if gui.status() == 'ACQUIRE': results[testName] = "PASSED"
+        else: results[testName] = "FAILED\n\tGUI returned mode: " + gui.status() + " expected: ACQUIRE"
 
         testName = 'Stop acquisition'
 
         gui.idle()
         time.sleep(1)
 
-        if gui.status() == 'IDLE':
-            results[testName] = "PASSED"
-        else:
-            results[testName] = "FAILED\n\tGUI returned mode: " + gui.status() + " expected: IDLE"
+        if gui.status() == 'IDLE': results[testName] = "PASSED"
+        else: results[testName] = "FAILED\n\tGUI returned mode: " + gui.status() + " expected: IDLE"
 
         gui.clear_signal_chain()
 
