@@ -1,39 +1,37 @@
-from open_ephys.control import OpenEphysHTTPServer
-from open_ephys.analysis import Session
+import time
 
-import time 
+from open_ephys.control import OpenEphysHTTPServer
+
+"""
+Test Name: Minimal Acquisition
+Test Description: Confirm the GUI can start and stop data acquisition
+"""
 
 def test(gui, params):
 
     results = {}
 
-    if params['fetch']:
+    gui.clear_signal_chain()
 
-        gui.clear_signal_chain()
+    gui.add_processor('File Reader')
 
-        gui.add_processor('File Reader')
+    gui.acquire()
+    time.sleep(params['acq_time'])
 
-        testName = 'Start acquisition'
+    testName = 'Start acquisition'
+    condition = gui.status() == 'ACQUIRE'
+    if condition: results[testName] = "PASSED"
+    else: results[testName] = "FAILED\n\tGUI returned mode: " + gui.status() + " expected: ACQUIRE"
 
-        gui.acquire()
-        time.sleep(params['acq_time'])
+    gui.idle()
+    time.sleep(1)
 
-        if gui.status() == 'ACQUIRE':
-            results[testName] = "PASSED"
-        else:
-            results[testName] = "FAILED\n\tGUI returned mode: " + gui.status() + " expected: ACQUIRE"
+    testName = 'Stop acquisition'
+    condition = gui.status() == 'IDLE'
+    if condition: results[testName] = "PASSED"
+    else: results[testName] = "FAILED\n\tGUI returned mode: " + gui.status() + " expected: IDLE"
 
-        testName = 'Stop acquisition'
-
-        gui.idle()
-        time.sleep(1)
-
-        if gui.status() == 'IDLE':
-            results[testName] = "PASSED"
-        else:
-            results[testName] = "FAILED\n\tGUI returned mode: " + gui.status() + " expected: IDLE"
-
-        gui.clear_signal_chain()
+    gui.clear_signal_chain()
 
     return results
 
@@ -45,9 +43,7 @@ import argparse
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--fetch', required=False, type=int, default=1)
-    parser.add_argument('--parent_directory', required=False, type=str, default='C:\\open-ephys\\data')
+    parser = argparse.ArgumentParser(description='Acquire data from the default signal chain')
     parser.add_argument('--acq_time', required=False, type=int, default=2)
 
     params = vars(parser.parse_args(sys.argv[1:]))

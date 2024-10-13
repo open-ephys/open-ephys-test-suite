@@ -20,6 +20,7 @@ def test(gui, params):
         # Load config for this test
         gui.load(params['cfg_path'])
 
+        # Apply custom data recording parameters
         for node in gui.get_processors("Record Node"):
             gui.set_record_engine(node['id'], params['engine'])
             gui.set_record_path(node['id'], params['parent_directory'])
@@ -58,7 +59,7 @@ def test(gui, params):
                 testName = "Recording %d length" % (rec_idx+1)
                 condition = np.absolute(len(stream.timestamps) - params['rec_time']*SAMPLE_RATE) < SAMPLE_NUM_TOLERANCE
                 if condition: results[testName] = "PASSED"
-                else: results[testName] = "FAILED\nExpected: %d\nActual: %d" % (len(stream.timestamps), params['rec_time']*stream.metadata['sample_rate'])
+                else: results[testName] = "FAILED\nExpected: %d\nActual: %d" % (params['rec_time']*stream.metadata['sample_rate'], len(stream.timestamps))
 
                 # Validate spikes were written in the second record node
                 testName = "Spikes recorded"
@@ -67,8 +68,8 @@ def test(gui, params):
                 else: results[testName] = "FAILED\nExpected: >0\nActual: %d" % len(recording.spikes)
 
                 # TODO: Save spike data to be used to verify channel mapper downstream.
-                for spike_channel in recording.spikes:
-                    print(f"{spike_channel.metadata['name']} : {len(spike_channel.sample_numbers)} spikes")
+                # for spike_channel in recording.spikes:
+                #     print(f"{spike_channel.metadata['name']} : {len(spike_channel.sample_numbers)} spikes")
 
     return results
 
@@ -83,11 +84,27 @@ import platform
 
 from pathlib import Path
 
+if platform.system() == 'Windows':
+    if os.getenv("GITHUB_ACTIONS"):
+        RECORD_PATH = os.getenv('OE_WINDOWS_GITHUB_RECORD_PATH')
+    else:  # custom local path
+        RECORD_PATH = os.getenv('OE_WINDOWS_LOCAL_RECORD_PATH')
+elif platform.system() == 'Linux':
+    if os.getenv("GITHUB_ACTIONS"):
+        RECORD_PATH = os.getenv('OE_LINUX_GITHUB_RECORD_PATH')
+    else:  # custom local path
+        RECORD_PATH = os.getenv('OE_LINUX_LOCAL_RECORD_PATH')
+else:
+    if os.getenv("GITHUB_ACTIONS"):
+        RECORD_PATH = os.getenv('OE_MAC_GITHUB_RECORD_PATH')
+    else:  # custom local path
+        RECORD_PATH = os.getenv('OE_MAC_LOCAL_RECORD_PATH')
+
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser = argparse.ArgumentParser(description='Record data from the default signal chain')
     parser.add_argument('--fetch', required=False, type=int, default=1)
-    parser.add_argument('--parent_directory', required=False, type=str, default='C:\\open-ephys\\data')
+    parser.add_argument('--parent_directory', required=False, type=str, default=RECORD_PATH)
     parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '../configs/file_reader_config.xml'))
     parser.add_argument('--acq_time', required=False, type=int, default=2)
     parser.add_argument('--rec_time', required=False, type=int, default=5)
