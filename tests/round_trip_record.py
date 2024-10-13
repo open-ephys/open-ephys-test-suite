@@ -1,10 +1,10 @@
-from open_ephys.control import OpenEphysHTTPServer
-from open_ephys.analysis import Session
+import time
+import os
 
 import numpy as np
 
-import time
-import os
+from open_ephys.control import OpenEphysHTTPServer
+from open_ephys.analysis import Session
 
 def test(gui, params):
 
@@ -12,26 +12,31 @@ def test(gui, params):
 
     RECORD_ENGINES = ("BINARY", "NWB2", "OPEN EPHYS")
 
-    # Fetch new data
-
     if params['fetch']:
 
         gui.load(params['cfg_path'])
 
         file_reader = gui.get_processors("File Reader")[0]
 
+        for node in gui.get_processors("Record Node"):
+            gui.set_record_path(node['id'], params['parent_directory'])
+            #gui.set_processor_parameter(node['id'], 'directory', params['parent_directory'])
+
         for idx, engine in enumerate(RECORD_ENGINES):
 
             gui.set_start_new_dir()
 
-            #params['engine] = "engine+str(idx)"
-            params['engine'] = str(idx)
+            params['engine'] = 'engine=' + str(idx)
 
             for node in gui.get_processors("Record Node"):
-                #gui.set_record_engine(node['id'], params['engine']) (Equivalent to the next line)
-                gui.set_processor_parameter(node['id'], 'engine', params['engine'])
-                #gui.set_record_path(node['id'], params['parent_directory']) (Equivalent to the next line)
-                gui.set_processor_parameter(node['id'], 'directory', params['parent_directory'])
+                print(f"Setting engine {params['engine']} for Record Node {node['id']}")
+                gui.set_record_engine(node['id'], params['engine'])
+
+                parameters = gui.get_parameters(node['id'])['parameters']
+                engine_param = next((param for param in parameters if param['name'] == 'engine'), None)
+                if not engine_param['value'] == params['engine'][-1]:
+                    raise Exception(f"Failed to set engine {params['engine']} for Record Node {node['id']}: {engine_param['value']}")
+                #gui.set_processor_parameter(node['id'], 'engine', params['engine'])
 
                 if engine == 'NWB2': break
 
@@ -74,12 +79,12 @@ def test(gui, params):
                 data_path = os.path.join(path, "Record Node 101", "experiment1.nwb")
 
             #Set File Reader to read from the last recorded data path
-            gui.set_file_path(file_reader['id'], "file=" + data_path)
+            #gui.set_file_path(file_reader['id'], "file=" + data_path) (not implemented in v1.0 yet)
+            gui.set_processor_parameter(file_reader['id'], 'selected_file', data_path)
 
         time.sleep(2)
 
     # Validate
-
     for path in gui.get_latest_recordings(params['parent_directory'], len(RECORD_ENGINES)): 
 
         session = Session(path) 
@@ -142,17 +147,26 @@ import platform
 from pathlib import Path
 
 if platform.system() == 'Windows':
-    RECORD_PATH = 'D:\\test-suite'
+    if os.getenv("GITHUB_ACTIONS"):
+        RECORD_PATH = os.getenv('OE_WINDOWS_GITHUB_RECORD_PATH')
+    else:  # custom local path
+        RECORD_PATH = os.getenv('OE_WINDOWS_LOCAL_RECORD_PATH')
 elif platform.system() == 'Linux':
-    RECORD_PATH = '<path/to/linux/runner>' #TODO
+    if os.getenv("GITHUB_ACTIONS"):
+        RECORD_PATH = os.getenv('OE_LINUX_GITHUB_RECORD_PATH')
+    else:  # custom local path
+        RECORD_PATH = os.getenv('OE_LINUX_LOCAL_RECORD_PATH')
 else:
-    RECORD_PATH = '/Volumes/T7/test-suite'
+    if os.getenv("GITHUB_ACTIONS"):
+        RECORD_PATH = os.getenv('OE_MAC_GITHUB_RECORD_PATH')
+    else:  # custom local path
+        RECORD_PATH = os.getenv('OE_MAC_LOCAL_RECORD_PATH')
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser = argparse.ArgumentParser(description='Record and load data in all supported formats round trip')
     parser.add_argument('--fetch', required=False, type=int, default=1)
-    parser.add_argument('--address', required=False, type=str, default='http://127.0.0.1')
+    parser.add_argument('--parent_directory', required=False, type=str, default=RECORD_PATH)
     parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '../configs/file_reader_config.xml'))
     parser.add_argument('--acq_time', required=False, type=int, default=2)
     parser.add_argument('--rec_time', required=False, type=int, default=5)
@@ -161,7 +175,6 @@ if __name__ == '__main__':
     parser.add_argument('--prepend_text', required=False, type=str, default='')
     parser.add_argument('--base_text', required=False, type=str, default='')
     parser.add_argument('--append_text', required=False, type=str, default='')
-    parser.add_argument('--parent_directory', required=False, type=str, default='C:\\open-ephys\\data')
     parser.add_argument('--engine', required=False, type=str, default='engine=0')
 
     params = vars(parser.parse_args(sys.argv[1:]))
