@@ -10,7 +10,7 @@ gui_tests = (
     'basic_record.py',
     'get_set_recording_info.py',
     'config_audio_device.py',
-    #'round_trip_record.py',
+    'round_trip_record.py',
 )
 
 #TODO: Add more plugin tests
@@ -18,30 +18,33 @@ plugin_tests = (
     'channel_map.py',
 )
 
-GHA = os.getenv("GITHUB_ACTIONS") == "true"
-
-LOCAL_MAC_PATH = '/Volumes/T7/test-suite/'
-
-RECORD_PATH = ''
 if platform.system() == 'Windows':
-    if GHA: RECORD_PATH = 'C:\\open-ephys\\data'
-    else:
-        pass #define local path here
+    if os.getenv("GITHUB_ACTIONS"):
+        RECORD_PATH = os.getenv('OE_WINDOWS_GITHUB_RECORD_PATH')
+    else:  # custom local path
+        RECORD_PATH = os.getenv('OE_WINDOWS_LOCAL_RECORD_PATH')
 elif platform.system() == 'Linux':
-    if GHA: pass #RECORD_PATH = '<path/to/linux/runner>'  # TODO
-    else:
-        pass #define local path here
-else: #macos
-    if GHA: pass #RECORD_PATH = '<path/to/Mac/runner>'  # TODO
-    else: RECORD_PATH = LOCAL_MAC_PATH
+    if os.getenv("GITHUB_ACTIONS"):
+        RECORD_PATH = os.getenv('OE_LINUX_GITHUB_RECORD_PATH')
+    else:  # custom local path
+        RECORD_PATH = os.getenv('OE_LINUX_LOCAL_RECORD_PATH')
+else:
+    if os.getenv("GITHUB_ACTIONS"):
+        RECORD_PATH = os.getenv('OE_MAC_GITHUB_RECORD_PATH')
+    else:  # custom local path
+        RECORD_PATH = os.getenv('OE_MAC_LOCAL_RECORD_PATH')
 
 for test in gui_tests + plugin_tests:
     print("--------------------------------")
     print("Running: ", test[:-3])
     print("Start time: ", datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
     print("--------------------------------")
-    rc = os.system(f"python3 ./tests/{test} --parent_directory {RECORD_PATH}")
+    rc = os.system(f"python3 ./tests/{test}")
     if rc != 0:
         print("TEST FAILED: ", test)
         break
+
+    #remove any files that were created during the current test
+    os.system("rm -rf " + RECORD_PATH + "/*")
+
     time.sleep(1)

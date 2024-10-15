@@ -1,6 +1,7 @@
-from open_ephys.control import OpenEphysHTTPServer
-
+import time
 import os.path
+
+from open_ephys.control import OpenEphysHTTPServer
 
 """
 Test Name: Processor Graph Actions
@@ -18,6 +19,8 @@ def test(gui, params):
 
     gui.clear_signal_chain()
 
+    time.sleep(1)
+
     condition = len(gui.get_processors()) == 0
     if condition: results[testName] = "PASSED"
     else: results[testName] = "FAILED\n\tProcessor count: " + str(len(gui.get_processors()))
@@ -25,6 +28,8 @@ def test(gui, params):
     testName = 'Load signal chain'
 
     gui.load(params['cfg_path'])
+
+    time.sleep(1)
 
     loaded_config = gui.get_config()
 
@@ -37,12 +42,16 @@ def test(gui, params):
 
     testName = 'Save configuration'
 
-    full_path = '/Volumes/T7/test-suite/testConfig3.xml'
+    full_path = os.path.join(params['parent_directory'], 'test_config.xml')
     gui.save(full_path)
 
     condition = os.path.exists(full_path)
     if condition: results[testName] = "PASSED"
     else: results[testName] = "FAILED\n\tFile not saved"
+
+    #delete saved file
+    if os.path.exists(full_path):
+        os.remove(full_path)
 
     testName = 'Add processor to an existing chain'
 
@@ -89,17 +98,36 @@ import platform
 from pathlib import Path
 
 if platform.system() == 'Windows':
-    RECORD_PATH = 'C:\\open-ephys\\data'
+    if os.getenv("GITHUB_ACTIONS"):
+        RECORD_PATH = os.getenv('OE_WINDOWS_GITHUB_RECORD_PATH')
+    else:  # custom local path
+        RECORD_PATH = os.getenv('OE_WINDOWS_LOCAL_RECORD_PATH')
 elif platform.system() == 'Linux':
-    RECORD_PATH = '<path/to/linux/runner>' #TODO
+    if os.getenv("GITHUB_ACTIONS"):
+        RECORD_PATH = os.getenv('OE_LINUX_GITHUB_RECORD_PATH')
+    else:  # custom local path
+        RECORD_PATH = os.getenv('OE_LINUX_LOCAL_RECORD_PATH')
 else:
-    RECORD_PATH = '<path/to/mac/runner>' #TODO
+    if os.getenv("GITHUB_ACTIONS"):
+        RECORD_PATH = os.getenv('OE_MAC_GITHUB_RECORD_PATH')
+    else:  # custom local path
+        RECORD_PATH = os.getenv('OE_MAC_LOCAL_RECORD_PATH')
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser = argparse.ArgumentParser(description='Test Processor Graph Actions')
+    parser.add_argument('--fetch', required=False, type=int, default=1)
+    parser.add_argument('--parent_directory', required=False, type=str, default=RECORD_PATH)
     parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '../configs/file_reader_config.xml'))
-    parser.add_argument('--parent_directory', required=False, type=str, default='C:\\open-ephys\\data')
+    parser.add_argument('--acq_time', required=False, type=int, default=2)
+    parser.add_argument('--rec_time', required=False, type=int, default=5)
+    parser.add_argument('--num_rec', required=False, type=int, default=1)
+    parser.add_argument('--num_exp', required=False, type=int, default=1)
+    parser.add_argument('--prepend_text', required=False, type=str, default='')
+    parser.add_argument('--base_text', required=False, type=str, default='')
+    parser.add_argument('--append_text', required=False, type=str, default='')
+    parser.add_argument('--engine', required=False, type=str, default='engine=0')
+
     params = vars(parser.parse_args(sys.argv[1:]))
 
     results = test(OpenEphysHTTPServer(), params)

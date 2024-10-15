@@ -1,8 +1,13 @@
 from open_ephys.control import OpenEphysHTTPServer
 from open_ephys.analysis import Session
 
-import time 
+import os
+import time
 
+"""
+Test Name: Set recording info
+Test Description: Set recording names and locations for Record Nodes
+"""
 def test(gui, params):
 
     # Fetch fresh data if needed
@@ -18,30 +23,31 @@ def test(gui, params):
 
         time.sleep(3)
         
-        # Set the parent directory
-        gui.set_parent_dir(params['parent_directory'])
+        # Set a new parent directory to get applied to new RecordNodes
+        os.makedirs(os.path.join(params['parent_directory'], 'test'), exist_ok=True)
+        gui.set_parent_dir(os.path.join(params['parent_directory'], 'test'))
 
-        # Set all record node engines
+        # Set all record node paths and engines
         for node in gui.get_processors("Record Node"):
+            gui.set_record_path(node['id'], params['parent_directory'])
             gui.set_record_engine(node['id'], params['engine'])
 
         # Add record node after Spike Viewer
-        gui.add_processor("Record Node")
+        gui.add_processor("Record Node") # (should use new parent dir)
 
+        # Check only the latest RecordNode has the new parent directory
         nodeDirectories = {}
         for node in gui.get_recording_info()['record_nodes']:
             nodeDirectories[node['node_id']] = node['parent_directory']
-            print("%d : %s" % (node['node_id'], node['parent_directory']))
+            print(f"Set path for Record Node {node['node_id']} to {node['parent_directory']}")
 
-        # Only latest RecordNode will have the newly set parent directory
         testName = 'Set recording names and locations'
 
         # Run some actions and record data
         for n in range(params['num_exp']):
 
             #Start a new directory only for the third experiment
-            if n == 2:
-                gui.set_start_new_dir()
+            if n == 2: gui.set_start_new_dir()
 
             for _ in range(params['num_rec']):
 
@@ -52,11 +58,13 @@ def test(gui, params):
 
             gui.idle()
 
+    root_folder = params['prepend_text'] + params['base_text'] + params['append_text']
+
     #Find the expected recordings
     for node, dir in nodeDirectories.items():
-        condition = len(gui.get_latest_recordings(dir, count=2)) == 2
-        if condition: results["Recording write path for node %d" % node] = "PASSED"
-        else: results["Recording write path for node %d" % node] = f"FAILED"
+        condition = len(gui.get_latest_recordings(os.path.join(dir, root_folder))) == 1
+        if condition: results[f"Recording write path for Record Node {node}"] = "PASSED"
+        else: results[f"Recording write path for Record Node {node}"] = "FAILED"
 
     # reset to default settings
     gui.set_prepend_text('')
@@ -73,23 +81,39 @@ def test(gui, params):
 import os
 import sys
 import argparse
+import platform
 
 from pathlib import Path
 
+if platform.system() == 'Windows':
+    if os.getenv("GITHUB_ACTIONS"):
+        RECORD_PATH = os.getenv('OE_WINDOWS_GITHUB_RECORD_PATH')
+    else:  # custom local path
+        RECORD_PATH = os.getenv('OE_WINDOWS_LOCAL_RECORD_PATH')
+elif platform.system() == 'Linux':
+    if os.getenv("GITHUB_ACTIONS"):
+        RECORD_PATH = os.getenv('OE_LINUX_GITHUB_RECORD_PATH')
+    else:  # custom local path
+        RECORD_PATH = os.getenv('OE_LINUX_LOCAL_RECORD_PATH')
+else:
+    if os.getenv("GITHUB_ACTIONS"):
+        RECORD_PATH = os.getenv('OE_MAC_GITHUB_RECORD_PATH')
+    else:  # custom local path
+        RECORD_PATH = os.getenv('OE_MAC_LOCAL_RECORD_PATH')
+
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser = argparse.ArgumentParser(description='Test Processor Graph Actions')
     parser.add_argument('--fetch', required=False, type=int, default=1)
-    parser.add_argument('--address', required=False, type=str, default='http://127.0.0.1')
+    parser.add_argument('--parent_directory', required=False, type=str, default=RECORD_PATH)
     parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '../configs/file_reader_config.xml'))
     parser.add_argument('--acq_time', required=False, type=int, default=2)
     parser.add_argument('--rec_time', required=False, type=int, default=5)
     parser.add_argument('--num_rec', required=False, type=int, default=1)
-    parser.add_argument('--num_exp', required=False, type=int, default=3)
-    parser.add_argument('--prepend_text', required=False, type=str, default='alice')
-    parser.add_argument('--base_text', required=False, type=str, default='test')
-    parser.add_argument('--append_text', required=False, type=str, default='auto')
-    parser.add_argument('--parent_directory', required=False, type=str, default='C:\\open-ephys\\data')
+    parser.add_argument('--num_exp', required=False, type=int, default=1)
+    parser.add_argument('--prepend_text', required=False, type=str, default='abc')
+    parser.add_argument('--base_text', required=False, type=str, default='main')
+    parser.add_argument('--append_text', required=False, type=str, default='xyz')
     parser.add_argument('--engine', required=False, type=str, default='engine=0')
 
     params = vars(parser.parse_args(sys.argv[1:]))

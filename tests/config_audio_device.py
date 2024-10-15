@@ -124,25 +124,23 @@ def test(gui, params):
 
                         SAMPLE_NUM_TOLERANCE = 0.025 * SAMPLE_RATE*params['rec_time']
 
-                        testName = '----------------------------------------------------------------------------------------------------------------\n'
-                        testName += f"Recording w/ buffer size {buffer_size} sample rate {sample_rate}\n"
-                        testName += '----------------------------------------------------------------------------------------------------------------\n'
-                        testName += f"% GUI CPU: Acquire {100 * float(gui_acquire_cpu['usage']):.1f} Record {100 * float(gui_record_cpu['usage']):.1f}\n"
-                        testName += f"% PS CPU: Acquire {ps_acquire_cpu:.1f} Record {ps_record_cpu:.1f}\n"
-                        testName += f"Latency: Acquire\n"
+                        testName = f"Recording w/ buffer size {buffer_size} sample rate {sample_rate}"
+                        stats = f"% GUI CPU: Acquire {100 * float(gui_acquire_cpu['usage']):.1f} Record {100 * float(gui_record_cpu['usage']):.1f}\n"
+                        stats += f"% PS CPU: Acquire {ps_acquire_cpu:.1f} Record {ps_record_cpu:.1f}\n"
+                        stats += f"Latency: Acquire\n"
                         for processor in latency_acquire['processors']:
-                            testName += f"\t{processor['name']}: {processor['id']}\n"
+                            stats += f"\t{processor['name']}: {processor['id']}\n"
                             for data_stream in processor['streams']:
-                                testName += f"\t\t{data_stream['name']}: {1000*data_stream['latency']:.1f} us\n"
-                        testName += f"Latency: Record\n"
+                                stats += f"\t\t{data_stream['name']}: {1000*data_stream['latency']:.1f} us\n"
+                        stats += f"Latency: Record\n"
                         for processor in latency_record['processors']:
-                            testName += f"\t{processor['name']}: {processor['id']}\n"
+                            stats += f"\t{processor['name']}: {processor['id']}\n"
                             for data_stream in processor['streams']:
-                                testName += f"\t\t{data_stream['name']}: {1000*data_stream['latency']:.1f} us\n"
+                                stats += f"\t\t{data_stream['name']}: {1000*data_stream['latency']:.1f} us\n"
 
                         condition = abs(stream.samples.shape[0] - SAMPLE_RATE * params['rec_time']) < SAMPLE_NUM_TOLERANCE
-                        if condition: results[testName] = "PASSED"
-                        else: results[testName] = "FAILED\n\tExpected: %d\n\tActual: %d" % (SAMPLE_RATE * params['rec_time'], stream.samples.shape[0])
+                        if condition: results[testName] = "PASSED\n" + stats
+                        else: results[testName] = "FAILED\n\tExpected: %d\n\tActual: %d" % (SAMPLE_RATE * params['rec_time'], stream.samples.shape[0]) + "\n" + stats
 
                         record_count += 1
 
@@ -159,17 +157,26 @@ import platform
 from pathlib import Path
 
 if platform.system() == 'Windows':
-    RECORD_PATH = 'C:\\open-ephys\\data'
+    if os.getenv("GITHUB_ACTIONS"):
+        RECORD_PATH = os.getenv('OE_WINDOWS_GITHUB_RECORD_PATH')
+    else:  # custom local path
+        RECORD_PATH = os.getenv('OE_WINDOWS_LOCAL_RECORD_PATH')
 elif platform.system() == 'Linux':
-    RECORD_PATH = '<path/to/linux/runner>' #TODO
+    if os.getenv("GITHUB_ACTIONS"):
+        RECORD_PATH = os.getenv('OE_LINUX_GITHUB_RECORD_PATH')
+    else:  # custom local path
+        RECORD_PATH = os.getenv('OE_LINUX_LOCAL_RECORD_PATH')
 else:
-    RECORD_PATH = '<path/to/mac/runner>' #TODO
+    if os.getenv("GITHUB_ACTIONS"):
+        RECORD_PATH = os.getenv('OE_MAC_GITHUB_RECORD_PATH')
+    else:  # custom local path
+        RECORD_PATH = os.getenv('OE_MAC_LOCAL_RECORD_PATH')
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser = argparse.ArgumentParser(description='Test Audio Device Configuration')
     parser.add_argument('--fetch', required=False, type=int, default=1)
-    parser.add_argument('--address', required=False, type=str, default='http://127.0.0.1')
+    parser.add_argument('--parent_directory', required=False, type=str, default=RECORD_PATH)
     parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '../configs/file_reader_config.xml'))
     parser.add_argument('--acq_time', required=False, type=int, default=2)
     parser.add_argument('--rec_time', required=False, type=int, default=5)
@@ -178,7 +185,6 @@ if __name__ == '__main__':
     parser.add_argument('--prepend_text', required=False, type=str, default='')
     parser.add_argument('--base_text', required=False, type=str, default='')
     parser.add_argument('--append_text', required=False, type=str, default='')
-    parser.add_argument('--parent_directory', required=False, type=str, default=RECORD_PATH)
     parser.add_argument('--engine', required=False, type=str, default='engine=0')
 
     params = vars(parser.parse_args(sys.argv[1:]))
@@ -186,4 +192,4 @@ if __name__ == '__main__':
     results = test(OpenEphysHTTPServer(), params)
 
     for test, result in results.items():
-        print(test, '-'*(100-len(test)), result)
+        print(test, '-'*(80-len(test)), result)

@@ -52,17 +52,15 @@ def test(gui, params):
 
             for _, stream in enumerate(recording.continuous):
 
-                SAMPLE_RATE = stream.metadata['sample_rate']
-                SAMPLE_NUM_TOLERANCE = 0.1 * SAMPLE_RATE
-
                 # Validate amount of continuous data recorded is within range
-                testName = "Recording %d length" % (rec_idx+1)
-                condition = np.absolute(len(stream.timestamps) - params['rec_time']*SAMPLE_RATE) < SAMPLE_NUM_TOLERANCE
+                testName = f"Recording {rec_idx+1} data size"
+                expected_samples = params['rec_time'] * stream.metadata['sample_rate']
+                condition = np.isclose(len(stream.timestamps), expected_samples, atol=0.05 * expected_samples)
                 if condition: results[testName] = "PASSED"
-                else: results[testName] = "FAILED\nExpected: %d\nActual: %d" % (params['rec_time']*stream.metadata['sample_rate'], len(stream.timestamps))
+                else: results[testName] = "FAILED\nExpected: %d\nActual: %d" % (expected_samples, len(stream.timestamps))
 
                 # Validate spikes were written in the second record node
-                testName = "Spikes recorded"
+                testName = f"Recording {rec_idx+1} spike count"
                 condition = node_idx  == 1 and len(recording.spikes) > 0
                 if condition: results[testName] = "PASSED"
                 else: results[testName] = "FAILED\nExpected: >0\nActual: %d" % len(recording.spikes)
@@ -108,8 +106,8 @@ if __name__ == '__main__':
     parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '../configs/file_reader_config.xml'))
     parser.add_argument('--acq_time', required=False, type=int, default=2)
     parser.add_argument('--rec_time', required=False, type=int, default=5)
-    parser.add_argument('--num_rec', required=False, type=int, default=1)
-    parser.add_argument('--num_exp', required=False, type=int, default=1)
+    parser.add_argument('--num_rec', required=False, type=int, default=2)
+    parser.add_argument('--num_exp', required=False, type=int, default=2)
     parser.add_argument('--prepend_text', required=False, type=str, default='')
     parser.add_argument('--base_text', required=False, type=str, default='')
     parser.add_argument('--append_text', required=False, type=str, default='')
