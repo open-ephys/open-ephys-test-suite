@@ -37,7 +37,7 @@ else:
 for test in gui_tests + plugin_tests:
     print("--------------------------------")
     print("Running: ", test[:-3])
-    print("Start time: ", datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
+    print("Start time: ", datetime.now().strftime("%Y-%m-%d_%H-%M-%S"), flush=True)
     print("--------------------------------")
     rc = os.system(f"python3 ./tests/{test}")
     if rc != 0:
