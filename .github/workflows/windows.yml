@@ -28,38 +28,44 @@ jobs:
       - name: Download GUI
         shell: powershell
         run: |
-          Invoke-WebRequest https://openephysgui.jfrog.io/artifactory/Dev/windows/open-ephys-latest-windows-dev.zip -OutFile C:\open-ephys.zip
+          Invoke-WebRequest https://openephysgui.jfrog.io/artifactory/1.0.0-dev/windows/open-ephys-v1.0.0-dev-windows.zip -OutFile C:\open-ephys.zip
           Expand-7ZipArchive -Path C:\open-ephys.zip -DestinationPath C:\
+          git clone --branch development-juce8 https://github.com/open-ephys/plugin-GUI.git C:\plugin-GUI
+          cd C:\plugin-GUI\Build
+          cmake -G "Visual Studio 17 2022" -A x64 ..
+          New-Item -Path 'C:\plugin-GUI\Build\Release' -ItemType Directory
+          Copy-Item -Path 'C:\open-ephys\*' -Destination 'C:\plugin-GUI\Build\Release' -Recurse -Force
           New-Item -Path 'C:\open-ephys\data' -ItemType Directory
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.2
+      - name: Install plugins
+        shell: powershell
+        run: |
+          New-Item -Path 'C:\OEPlugins' -ItemType Directory
+          git clone --branch juce8 https://github.com/open-ephys-plugins/open-ephys-data-format.git C:\OEPlugins\open-ephys-data-format
+          cd C:\OEPlugins\open-ephys-data-format\Build
+          cmake -G "Visual Studio 17 2022" -A x64 ..
+          msbuild INSTALL.vcxproj -p:Configuration=Release -p:Platform=x64
+          git clone --branch juce8 https://github.com/open-ephys-plugins/OpenEphysHDF5Lib.git C:\OEPlugins\OpenEphysHDF5Lib
+          cd C:\OEPlugins\OpenEphysHDF5Lib\Build
+          cmake -G "Visual Studio 17 2022" -A x64 ..
+          msbuild INSTALL.vcxproj -p:Configuration=Release -p:Platform=x64
+          git clone --branch juce8 https://github.com/open-ephys-plugins/nwb-format.git C:\OEPlugins\nwb-format
+          cd C:\OEPlugins\nwb-format\Build
+          cmake -G "Visual Studio 17 2022" -A x64 ..
+          msbuild INSTALL.vcxproj -p:Configuration=Release -p:Platform=x64
       - name: Install test-suite
         shell: powershell
         run: |
-          pip install open-ephys-python-tools
-      - name: Round Trip Test
+          git clone --branch juce8 https://github.com/open-ephys/open-ephys-python-tools.git C:\open-ephys-python-tools
+          cd C:\open-ephys-python-tools
+          pip install -e .
+          pip install psutil
+      - name: Run Tests
         shell: powershell
         run: |
-          Copy-Item -Path "D:\a\open-ephys-test-suite\open-ephys-test-suite\plugins\*" -Destination "C:\open-ephys\plugins" -Recurse
-          Copy-Item -Path "D:\a\open-ephys-test-suite\open-ephys-test-suite\shared\*" -Destination "C:\open-ephys\shared" -Recurse
-          Start-Sleep -Seconds 2
-          & C:\open-ephys\open-ephys.exe configs\file_reader_config.xml
+          & C:\plugin-GUI\Build\Release\open-ephys.exe
           Start-Sleep -Seconds 5
-          python tests\round_trip_record.py --mode githubactions --fetch 1 --num_exp 2 --num_rec 2
-      - name: Test Get/Set Recording Info
-        shell: powershell
-        run: |
-          & C:\open-ephys\open-ephys.exe configs\file_reader_config.xml
-          Start-Sleep -Seconds 5
-          python tests\get_set_recording_info.py --mode githubactions --fetch 1
-          Get-ChildItem -Path C:\open-ephys\data -Recurse -Directory -Force -ErrorAction SilentlyContinue | Select-Object FullName
-      - name: Test Get/Set Parameters
-        shell: powershell
-        run: |
-          & C:\open-ephys\open-ephys.exe configs\file_reader_config.xml
-          Start-Sleep -Seconds 5
-          python tests\get_set_parameters.py --mode githubactions --fetch 1
-      - name: Test Add/Delete Processors
-        shell: powershell
-        run: |
-          & C:\open-ephys\open-ephys.exe configs\file_reader_config.xml
-          Start-Sleep -Seconds 5
-          python tests\add_delete_processors.py --mode githubactions --fetch 1
+          python run_all.py
+        env:
+          OE_WINDOWS_GITHUB_RECORD_PATH: C:\open-ephys\data

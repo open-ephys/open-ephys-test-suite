@@ -2,7 +2,6 @@ import time
 import psutil
 
 import numpy as np
-import json
 
 from open_ephys.control import OpenEphysHTTPServer
 from open_ephys.analysis import Session
