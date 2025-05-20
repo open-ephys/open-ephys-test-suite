@@ -28,7 +28,7 @@ jobs:
       - name: Download GUI
         shell: powershell
         run: |
-          Invoke-WebRequest https://openephys.jfrog.io/artifactory/GUI-binaries/1.0.0-dev/windows/open-ephys-v1.0.0-dev-windows.zip -OutFile C:\open-ephys.zip
+          Invoke-WebRequest https://openephys.jfrog.io/artifactory/GUI-binaries/1.0.0-alpha/windows/open-ephys-v1.0.0-alpha.4-windows.zip -OutFile C:\open-ephys.zip
           Expand-7ZipArchive -Path C:\open-ephys.zip -DestinationPath C:\
           git clone --branch development-juce8 https://github.com/open-ephys/plugin-GUI.git C:\plugin-GUI
           cd C:\plugin-GUI\Build
@@ -42,15 +42,15 @@ jobs:
         shell: powershell
         run: |
           New-Item -Path 'C:\OEPlugins' -ItemType Directory
-          git clone --branch juce8 https://github.com/open-ephys-plugins/open-ephys-data-format.git C:\OEPlugins\open-ephys-data-format
+          git clone --branch testing-juce8 https://github.com/open-ephys-plugins/open-ephys-data-format.git C:\OEPlugins\open-ephys-data-format
           cd C:\OEPlugins\open-ephys-data-format\Build
           cmake -G "Visual Studio 17 2022" -A x64 ..
           msbuild INSTALL.vcxproj -p:Configuration=Release -p:Platform=x64
-          git clone --branch juce8 https://github.com/open-ephys-plugins/OpenEphysHDF5Lib.git C:\OEPlugins\OpenEphysHDF5Lib
+          git clone --branch testing-juce8 https://github.com/open-ephys-plugins/OpenEphysHDF5Lib.git C:\OEPlugins\OpenEphysHDF5Lib
           cd C:\OEPlugins\OpenEphysHDF5Lib\Build
           cmake -G "Visual Studio 17 2022" -A x64 ..
           msbuild INSTALL.vcxproj -p:Configuration=Release -p:Platform=x64
-          git clone --branch juce8 https://github.com/open-ephys-plugins/nwb-format.git C:\OEPlugins\nwb-format
+          git clone --branch testing-juce8 https://github.com/open-ephys-plugins/nwb-format.git C:\OEPlugins\nwb-format
           cd C:\OEPlugins\nwb-format\Build
           cmake -G "Visual Studio 17 2022" -A x64 ..
           msbuild INSTALL.vcxproj -p:Configuration=Release -p:Platform=x64
@@ -64,8 +64,13 @@ jobs:
       - name: Run Tests
         shell: powershell
         run: |
-          & C:\plugin-GUI\Build\Release\open-ephys.exe
-          Start-Sleep -Seconds 5
-          python run_all.py
+          $process = Start-Process -FilePath "C:\plugin-GUI\Build\Release\open-ephys.exe" -ArgumentList "C:\plugin-GUI\Build\Release\configs\file_reader_config.xml" -NoNewWindow -PassThru
+          Write-Host "Started open-ephys process with ID: $($process.Id)"
+          Start-Sleep -Seconds 20
+          Write-Host "Starting Python script..."
+          python run_all.py 2>&1 | Tee-Object -FilePath "python_output.log"
+          Write-Host "Python script completed. Output saved to python_output.log"
+          Get-Content "python_output.log"
+          Stop-Process -Id $process.Id -Force
         env:
           OE_WINDOWS_GITHUB_RECORD_PATH: C:\open-ephys\data

@@ -31,7 +31,7 @@ def test(gui, params):
 
     time.sleep(1)
 
-    loaded_config = gui.get_config()
+    #loaded_config = gui.get_config()
 
     condition = len(gui.get_processors()) > 0
     if condition: results[testName] = "PASSED"

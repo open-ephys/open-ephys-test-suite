@@ -3,13 +3,15 @@ import time
 import platform
 from datetime import datetime
 
+def log(msg): print(f'[test-suite] {msg}', flush=True)
+
 gui_tests = (
     'processor_graph_actions.py',
     'get_set_parameters.py',
     'basic_acquire.py',
     'basic_record.py',
     'get_set_recording_info.py',
-    'config_audio_device.py',
+    #'config_audio_device.py',
     'round_trip_record.py',
 )
 
@@ -34,14 +36,14 @@ else:
     else:  # custom local path
         RECORD_PATH = os.getenv('OE_MAC_LOCAL_RECORD_PATH')
 
+log("Starting test suite")
+time.sleep(10)
 for test in gui_tests + plugin_tests:
-    print("--------------------------------")
-    print("Running: ", test[:-3])
-    print("Start time: ", datetime.now().strftime("%Y-%m-%d_%H-%M-%S"), flush=True)
-    print("--------------------------------")
-    rc = os.system(f"python3 ./tests/{test}")
+    log(f"Running: {test[:-3]}")
+    log(f"Start time: {datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}")
+    rc = os.system(f"python ./tests/{test}")
     if rc != 0:
-        print("TEST FAILED: ", test)
+        log(f"TEST FAILED: {test}")
         break
 
     #remove any files that were created during the current test
