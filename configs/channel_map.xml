@@ -26,7 +26,7 @@
     <PROCESSOR name="Record Node" insertionPoint="1" pluginName="Record Node"
                type="0" index="3" libraryName="" libraryVersion="" processorType="8"
                nodeId="101">
-      <PROCESSOR_PARAMETERS directory="/Volumes/T7/test-suite/" engine="0" events="1" spikes="1"
+      <PROCESSOR_PARAMETERS directory="default" engine="0" events="1" spikes="1"
                             main_sync="0"/>
       <STREAM name="example_data" description="A description of the File Reader Stream"
               sample_rate="40000.0" channel_count="16">
@@ -171,7 +171,7 @@
     <PROCESSOR name="Record Node" insertionPoint="1" pluginName="Record Node"
                type="0" index="3" libraryName="" libraryVersion="" processorType="8"
                nodeId="105">
-      <PROCESSOR_PARAMETERS directory="/Volumes/T7/test-suite/" engine="0" events="1" spikes="1"
+      <PROCESSOR_PARAMETERS directory="default" engine="0" events="1" spikes="1"
                             main_sync="0"/>
       <STREAM name="example_data" description="A description of the File Reader Stream"
               sample_rate="40000.0" channel_count="14">
