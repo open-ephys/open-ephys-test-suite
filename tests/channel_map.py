@@ -17,7 +17,7 @@ def test(gui, params):
     if params['fetch']:
 
         gui.load(params['cfg_path'])
-
+        
         for node in gui.get_processors("Record Node"):
             gui.set_record_engine(node['id'], params['engine'])
             gui.set_record_path(node['id'], params['parent_directory'])

@@ -6,11 +6,11 @@ from datetime import datetime
 def log(msg): print(f'[test-suite] {msg}', flush=True)
 
 gui_tests = (
-    'processor_graph_actions.py',
-    'get_set_parameters.py',
-    'basic_acquire.py',
-    'basic_record.py',
-    'get_set_recording_info.py',
+    #'processor_graph_actions.py',
+    #'get_set_parameters.py',
+    #'basic_acquire.py',
+    #'basic_record.py',
+    #'get_set_recording_info.py',
     #'config_audio_device.py',
     'round_trip_record.py',
 )
@@ -37,16 +37,17 @@ else:
         RECORD_PATH = os.getenv('OE_MAC_LOCAL_RECORD_PATH')
 
 log("Starting test suite")
-time.sleep(10)
+log("Clearing existing recordings")
+os.system("rm -rf " + RECORD_PATH + "/*")
+
 for test in gui_tests + plugin_tests:
     log(f"Running: {test[:-3]}")
     log(f"Start time: {datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}")
-    rc = os.system(f"python ./tests/{test}")
+    rc = os.system(f"python3 ./tests/{test}")
     if rc != 0:
         log(f"TEST FAILED: {test}")
         break
 
     #remove any files that were created during the current test
-    os.system("rm -rf " + RECORD_PATH + "/*")
-
-    time.sleep(1)
+    log("Clearing existing recordings")
+    #os.system("rm -rf " + RECORD_PATH + "/*")

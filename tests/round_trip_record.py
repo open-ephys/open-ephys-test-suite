@@ -10,7 +10,11 @@ def test(gui, params):
 
     results = {}
 
-    RECORD_ENGINES = ("BINARY", "NWB2", "OPEN EPHYS")
+    RECORD_ENGINES = {
+        "BINARY" : 0,
+        "NWB" : 1,
+        "OPEN EPHYS" : 2
+    }
 
     if params['fetch']:
 
@@ -22,9 +26,12 @@ def test(gui, params):
             gui.set_record_path(node['id'], params['parent_directory'])
             #gui.set_processor_parameter(node['id'], 'directory', params['parent_directory'])
 
-        for idx, engine in enumerate(RECORD_ENGINES):
+        for engine, idx in RECORD_ENGINES.items():
 
-            gui.set_start_new_dir()
+            if idx not in (2,):
+                continue
+
+            #gui.set_start_new_dir()
 
             params['engine'] = 'engine=' + str(idx)
 

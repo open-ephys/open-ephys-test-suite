@@ -38,7 +38,9 @@ def test(gui, params):
             gui.idle()
 
     # Validate results
-    session = Session(gui.get_latest_recordings(params['parent_directory'])[0])
+    dir_ = params['parent_directory']
+    print(dir_)
+    session = Session(gui.get_latest_recordings(dir_)[0])
 
     for node_idx, node in enumerate(session.recordnodes):
 
