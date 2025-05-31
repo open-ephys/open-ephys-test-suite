@@ -6,6 +6,8 @@ import numpy as np
 from open_ephys.control import OpenEphysHTTPServer
 from open_ephys.analysis import Session
 
+def log(msg): print(f'[test-suite] {msg}', flush=True)
+
 def test(gui, params):
 
     results = {}
@@ -28,24 +30,22 @@ def test(gui, params):
 
         for engine, idx in RECORD_ENGINES.items():
 
-            if idx not in (2,):
-                continue
-
             #gui.set_start_new_dir()
 
             params['engine'] = 'engine=' + str(idx)
 
             for node in gui.get_processors("Record Node"):
-                print(f"Setting engine {params['engine']} for Record Node {node['id']}")
-                gui.set_record_engine(node['id'], params['engine'])
+                log(f"Setting engine {params['engine']} for Record Node {node['id']}")
+                #gui.set_record_engine(node['id'], params['engine'])
+                gui.set_processor_parameter(node['id'], 'engine', RECORD_ENGINES[engine])
 
                 parameters = gui.get_parameters(node['id'])['parameters']
                 engine_param = next((param for param in parameters if param['name'] == 'engine'), None)
+                log(f"Engine parameter: {engine_param}")
                 if not engine_param['value'] == params['engine'][-1]:
                     raise Exception(f"Failed to set engine {params['engine']} for Record Node {node['id']}: {engine_param['value']}")
-                #gui.set_processor_parameter(node['id'], 'engine', params['engine'])
 
-                if engine == 'NWB2': break
+                if engine == 'NWB': break
 
             for _ in range(params['num_exp']):
 
@@ -66,7 +66,7 @@ def test(gui, params):
 
             print(path)
             
-            if engine != 'NWB2': #TODO: Enable multi-threaded recording for NWB2
+            if engine != 'NWB': #TODO: Enable multi-threaded recording for NWB
 
                 session = Session(path)
 

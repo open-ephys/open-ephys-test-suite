@@ -6,11 +6,11 @@ from datetime import datetime
 def log(msg): print(f'[test-suite] {msg}', flush=True)
 
 gui_tests = (
-    #'processor_graph_actions.py',
-    #'get_set_parameters.py',
-    #'basic_acquire.py',
-    #'basic_record.py',
-    #'get_set_recording_info.py',
+    'processor_graph_actions.py',
+    'get_set_parameters.py',
+    'basic_acquire.py',
+    'basic_record.py',
+    'get_set_recording_info.py',
     #'config_audio_device.py',
     'round_trip_record.py',
 )
@@ -49,5 +49,7 @@ for test in gui_tests + plugin_tests:
         break
 
     #remove any files that were created during the current test
-    log("Clearing existing recordings")
-    #os.system("rm -rf " + RECORD_PATH + "/*")
+    CLEAR_RECORDINGS = False
+    if CLEAR_RECORDINGS:
+        log("Clearing existing recordings")
+        os.system("rm -rf " + RECORD_PATH + "/*")

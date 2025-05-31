@@ -88,7 +88,7 @@ if __name__ == '__main__':
     parser.add_argument('--parent_directory', required=False, type=str, default=RECORD_PATH)
     parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '../configs/channel_map.xml'))
     parser.add_argument('--acq_time', required=False, type=int, default=2)
-    parser.add_argument('--rec_time', required=False, type=int, default=5)
+    parser.add_argument('--rec_time', required=False, type=int, default=2)
     parser.add_argument('--num_rec', required=False, type=int, default=1)
     parser.add_argument('--num_exp', required=False, type=int, default=1)
     parser.add_argument('--prepend_text', required=False, type=str, default='')
