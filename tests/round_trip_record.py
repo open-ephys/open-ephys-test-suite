@@ -14,8 +14,8 @@ def test(gui, params):
 
     RECORD_ENGINES = {
         "BINARY" : 0,
-        "NWB" : 1,
-        "OPEN EPHYS" : 2
+        "NWB2" : 1,
+        "OPENEPHYS" : 2
     }
 
     if params['fetch']:
@@ -42,10 +42,10 @@ def test(gui, params):
                 parameters = gui.get_parameters(node['id'])['parameters']
                 engine_param = next((param for param in parameters if param['name'] == 'engine'), None)
                 log(f"Engine parameter: {engine_param}")
-                if not engine_param['value'] == params['engine'][-1]:
+                if not engine_param['value'] == str(idx):
                     raise Exception(f"Failed to set engine {params['engine']} for Record Node {node['id']}: {engine_param['value']}")
 
-                if engine == 'NWB': break
+                if engine == 'NWB2': break
 
             for _ in range(params['num_exp']):
 
@@ -66,7 +66,7 @@ def test(gui, params):
 
             print(path)
             
-            if engine != 'NWB': #TODO: Enable multi-threaded recording for NWB
+            if engine != 'NWB2': #TODO: Enable multi-threaded recording for NWB
 
                 session = Session(path)
 
@@ -176,7 +176,7 @@ if __name__ == '__main__':
     parser.add_argument('--parent_directory', required=False, type=str, default=RECORD_PATH)
     parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '../configs/file_reader_config.xml'))
     parser.add_argument('--acq_time', required=False, type=int, default=2)
-    parser.add_argument('--rec_time', required=False, type=int, default=2)
+    parser.add_argument('--rec_time', required=False, type=int, default=4)
     parser.add_argument('--num_rec', required=False, type=int, default=1)
     parser.add_argument('--num_exp', required=False, type=int, default=1)
     parser.add_argument('--prepend_text', required=False, type=str, default='')
