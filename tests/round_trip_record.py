@@ -32,7 +32,7 @@ def test(gui, params):
 
             #gui.set_start_new_dir()
 
-            params['engine'] = 'engine=' + str(idx)
+            params['engine'] = 'engine=' + engine
 
             for node in gui.get_processors("Record Node"):
                 log(f"Setting engine {params['engine']} for Record Node {node['id']}")
