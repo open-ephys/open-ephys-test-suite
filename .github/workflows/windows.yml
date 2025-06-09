@@ -70,7 +70,16 @@ jobs:
           Write-Host "Starting Python script..."
           python run_all.py 2>&1 | Tee-Object -FilePath "python_output.log"
           Write-Host "Python script completed. Output saved to python_output.log"
-          Get-Content "python_output.log"
           Stop-Process -Id $process.Id -Force
         env:
           OE_WINDOWS_GITHUB_RECORD_PATH: C:\open-ephys\data
+      - name: Set timestamp
+        shell: powershell
+        id: timestamp
+        run: echo "timestamp=$(Get-Date -Format 'yyyy_MM_dd_HH_mm_ss')" >> $env:GITHUB_OUTPUT
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows/${{ steps.timestamp.outputs.timestamp }}.log
+          path: python_output.log
+          retention-days: 7
