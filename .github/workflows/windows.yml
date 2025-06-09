@@ -28,7 +28,7 @@ jobs:
       - name: Download GUI
         shell: powershell
         run: |
-          Invoke-WebRequest https://openephys.jfrog.io/artifactory/GUI-binaries/1.0.0-alpha/windows/open-ephys-v1.0.0-alpha.4-windows.zip -OutFile C:\open-ephys.zip
+          Invoke-WebRequest https://openephys.jfrog.io/artifactory/GUI-binaries/1.0.0-dev/windows/open-ephys-v1.0.0-dev-windows.zip -OutFile C:\open-ephys.zip
           Expand-7ZipArchive -Path C:\open-ephys.zip -DestinationPath C:\
           git clone --branch development-juce8 https://github.com/open-ephys/plugin-GUI.git C:\plugin-GUI
           cd C:\plugin-GUI\Build
