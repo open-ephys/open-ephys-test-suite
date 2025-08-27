@@ -57,7 +57,7 @@ else:
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '../configs/file_reader_config.xml'))
+    parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '../../configs/file_reader_config.xml'))
     parser.add_argument('--parent_directory', required=False, type=str, default='C:\\open-ephys\\data')
     params = vars(parser.parse_args(sys.argv[1:]))
 

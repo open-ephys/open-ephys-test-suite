@@ -28,9 +28,9 @@ jobs:
       - name: Download GUI
         shell: powershell
         run: |
-          Invoke-WebRequest https://openephys.jfrog.io/artifactory/GUI-binaries/1.0.0-dev/windows/open-ephys-v1.0.0-dev-windows.zip -OutFile C:\open-ephys.zip
+          Invoke-WebRequest https://openephys.jfrog.io/artifactory/GUI-binaries/Release/windows/open-ephys-v1.0.1-windows.zip -OutFile C:\open-ephys.zip
           Expand-7ZipArchive -Path C:\open-ephys.zip -DestinationPath C:\
-          git clone --branch development-juce8 https://github.com/open-ephys/plugin-GUI.git C:\plugin-GUI
+          git clone --branch development https://github.com/open-ephys/plugin-GUI.git C:\plugin-GUI
           cd C:\plugin-GUI\Build
           cmake -G "Visual Studio 17 2022" -A x64 ..
           New-Item -Path 'C:\plugin-GUI\Build\Release' -ItemType Directory
@@ -42,22 +42,22 @@ jobs:
         shell: powershell
         run: |
           New-Item -Path 'C:\OEPlugins' -ItemType Directory
-          git clone --branch testing-juce8 https://github.com/open-ephys-plugins/open-ephys-data-format.git C:\OEPlugins\open-ephys-data-format
+          git clone --branch main https://github.com/open-ephys-plugins/open-ephys-data-format.git C:\OEPlugins\open-ephys-data-format
           cd C:\OEPlugins\open-ephys-data-format\Build
           cmake -G "Visual Studio 17 2022" -A x64 ..
           msbuild INSTALL.vcxproj -p:Configuration=Release -p:Platform=x64
-          git clone --branch testing-juce8 https://github.com/open-ephys-plugins/OpenEphysHDF5Lib.git C:\OEPlugins\OpenEphysHDF5Lib
+          git clone --branch main https://github.com/open-ephys-plugins/OpenEphysHDF5Lib.git C:\OEPlugins\OpenEphysHDF5Lib
           cd C:\OEPlugins\OpenEphysHDF5Lib\Build
           cmake -G "Visual Studio 17 2022" -A x64 ..
           msbuild INSTALL.vcxproj -p:Configuration=Release -p:Platform=x64
-          git clone --branch testing-juce8 https://github.com/open-ephys-plugins/nwb-format.git C:\OEPlugins\nwb-format
+          git clone --branch main https://github.com/open-ephys-plugins/nwb-format.git C:\OEPlugins\nwb-format
           cd C:\OEPlugins\nwb-format\Build
           cmake -G "Visual Studio 17 2022" -A x64 ..
           msbuild INSTALL.vcxproj -p:Configuration=Release -p:Platform=x64
       - name: Install test-suite
         shell: powershell
         run: |
-          git clone --branch juce8 https://github.com/open-ephys/open-ephys-python-tools.git C:\open-ephys-python-tools
+          git clone --branch main https://github.com/open-ephys/open-ephys-python-tools.git C:\open-ephys-python-tools
           cd C:\open-ephys-python-tools
           pip install -e .
           pip install psutil

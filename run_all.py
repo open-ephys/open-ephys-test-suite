@@ -6,18 +6,18 @@ from datetime import datetime
 def log(msg): print(f'[test-suite] {msg}', flush=True)
 
 gui_tests = (
-    'processor_graph_actions.py',
-    'get_set_parameters.py',
-    'basic_acquire.py',
-    'basic_record.py',
-    'get_set_recording_info.py',
+    os.path.join('core', 'processor_graph_actions.py'),
+    os.path.join('core', 'get_set_parameters.py'),
+    os.path.join('core', 'basic_acquire.py'),
+    os.path.join('core', 'basic_record.py'),
+    os.path.join('core', 'get_set_recording_info.py'),
     #'config_audio_device.py',
-    'round_trip_record.py',
+    os.path.join('core', 'round_trip_record.py'),
 )
 
-#TODO: Add more plugin tests
+#TODO: Add more built-inplugin tests
 plugin_tests = (
-    'channel_map.py',
+    os.path.join('plugins', 'channel_map.py'),
 )
 
 if platform.system() == 'Windows':
@@ -43,7 +43,7 @@ os.system("rm -rf " + RECORD_PATH + "/*")
 for test in gui_tests + plugin_tests:
     log(f"Running: {test[:-3]}")
     log(f"Start time: {datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}")
-    rc = os.system(f"python3 ./tests/{test}")
+    rc = os.system(f"python3 {os.path.join('tests', test)}")
     if rc != 0:
         log(f"TEST FAILED: {test}")
         break

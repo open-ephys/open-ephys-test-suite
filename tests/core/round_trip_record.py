@@ -174,7 +174,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Record and load data in all supported formats round trip')
     parser.add_argument('--fetch', required=False, type=int, default=1)
     parser.add_argument('--parent_directory', required=False, type=str, default=RECORD_PATH)
-    parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '../configs/file_reader_config.xml'))
+    parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '../../configs/file_reader_config.xml'))
     parser.add_argument('--acq_time', required=False, type=int, default=2)
     parser.add_argument('--rec_time', required=False, type=int, default=4)
     parser.add_argument('--num_rec', required=False, type=int, default=1)
