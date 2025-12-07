@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import platform
 from datetime import datetime
@@ -43,13 +44,24 @@ os.system("rm -rf " + RECORD_PATH + "/*")
 for test in gui_tests + plugin_tests:
     log(f"Running: {test[:-3]}")
     log(f"Start time: {datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}")
-    rc = os.system(f"python3 {os.path.join('tests', test)}")
+    
+    test_path = os.path.join('tests', test)
+    log(f"Executing: python3 {test_path}")
+    
+    rc = os.system(f"python3 {test_path}")
+    
     if rc != 0:
-        log(f"TEST FAILED: {test}")
-        break
+        log(f"TEST FAILED: {test} (exit code: {rc})")
+        log(f"Check output above for error details")
+        sys.exit(rc)
+    
+    log(f"Test completed successfully: {test}")
+    log(f"End time: {datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}")
 
     #remove any files that were created during the current test
     CLEAR_RECORDINGS = False
     if CLEAR_RECORDINGS:
         log("Clearing existing recordings")
         os.system("rm -rf " + RECORD_PATH + "/*")
+
+log("All tests completed successfully")
