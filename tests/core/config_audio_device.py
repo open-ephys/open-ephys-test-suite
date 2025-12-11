@@ -119,7 +119,7 @@ def test(gui, params):
 
                     for _, stream in enumerate(latest_recording.continuous):
 
-                        SAMPLE_RATE = stream.metadata['sample_rate']
+                        SAMPLE_RATE = stream.metadata.sample_rate
 
                         SAMPLE_NUM_TOLERANCE = 0.025 * SAMPLE_RATE*params['rec_time']
 

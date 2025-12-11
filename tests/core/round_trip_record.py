@@ -110,10 +110,10 @@ def test(gui, params):
                 for stream_idx, stream in enumerate(recording.continuous):
                             
                     testName = str(recording.format) + " sample count"
-                    SAMPLE_NUM_TOLERANCE = 0.2 * stream.metadata['sample_rate']
+                    SAMPLE_NUM_TOLERANCE = 0.2 * stream.metadata.sample_rate
 
                     actual = len(stream.timestamps)
-                    expected = int(params['rec_time']*stream.metadata['sample_rate'])
+                    expected = int(params['rec_time']*stream.metadata.sample_rate)
 
                     condition = np.absolute(actual - expected) < SAMPLE_NUM_TOLERANCE
                     if condition: results[testName] = "PASSED"

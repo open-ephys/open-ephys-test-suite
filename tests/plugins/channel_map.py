@@ -50,7 +50,7 @@ def test(gui, params):
     else: results[testName] = "FAILED\nExpected: >0\nActual: %d" % len(recording.spikes)
 
     for spike_channel in recording.spikes:
-        print(f"{spike_channel.metadata['name']} : {len(spike_channel.sample_numbers)} spikes")
+        print(f"{spike_channel.metadata.name} : {len(spike_channel.sample_numbers)} spikes")
 
     return results
 
