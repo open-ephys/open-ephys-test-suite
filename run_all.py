@@ -3,6 +3,7 @@ import sys
 import time
 import platform
 from datetime import datetime
+import subprocess
 
 def log(msg): print(f'[test-suite] {msg}', flush=True)
 
@@ -37,6 +38,12 @@ else:
     else:  # custom local path
         RECORD_PATH = os.getenv('OE_MAC_LOCAL_RECORD_PATH')
 
+if not RECORD_PATH:
+    raise RuntimeError(
+        "RECORD_PATH is not set. Define one of the OE_*_RECORD_PATH environment variables "
+        "for your OS (e.g. OE_WINDOWS_LOCAL_RECORD_PATH)."
+    )
+
 log("Starting test suite")
 log("Clearing existing recordings")
 os.system("rm -rf " + RECORD_PATH + "/*")
@@ -46,14 +53,14 @@ for test in gui_tests + plugin_tests:
     log(f"Start time: {datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}")
     
     test_path = os.path.join('tests', test)
-    log(f"Executing: python3 {test_path}")
-    
-    rc = os.system(f"python3 {test_path}")
-    
-    if rc != 0:
-        log(f"TEST FAILED: {test} (exit code: {rc})")
+    log(f"Executing: {sys.executable} {test_path}")
+
+    completed = subprocess.run([sys.executable, test_path])
+
+    if completed.returncode != 0:
+        log(f"TEST FAILED: {test} (exit code: {completed.returncode})")
         log(f"Check output above for error details")
-        sys.exit(rc)
+        sys.exit(completed.returncode)
     
     log(f"Test completed successfully: {test}")
     log(f"End time: {datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}")
