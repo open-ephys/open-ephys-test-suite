@@ -28,7 +28,7 @@ jobs:
       - name: Download GUI
         shell: powershell
         run: |
-          Invoke-WebRequest https://openephys.jfrog.io/artifactory/GUI-binaries/Release/windows/open-ephys-v1.0.1-windows.zip -OutFile C:\open-ephys.zip
+          Invoke-WebRequest https://openephys.jfrog.io/artifactory/GUI-binaries/Release/windows/open-ephys-v1.0.2-windows.zip -OutFile C:\open-ephys.zip
           Expand-7ZipArchive -Path C:\open-ephys.zip -DestinationPath C:\
           git clone --branch development https://github.com/open-ephys/plugin-GUI.git C:\plugin-GUI
           cd C:\plugin-GUI\Build
@@ -37,7 +37,7 @@ jobs:
           Copy-Item -Path 'C:\open-ephys\*' -Destination 'C:\plugin-GUI\Build\Release' -Recurse -Force
           New-Item -Path 'C:\open-ephys\data' -ItemType Directory
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.0.2
+        uses: microsoft/setup-msbuild@v2
       - name: Install plugins
         shell: powershell
         run: |
@@ -64,9 +64,10 @@ jobs:
       - name: Run Tests
         shell: powershell
         run: |
+          New-Item -Path 'C:\open-ephys\data' -ItemType Directory
           $process = Start-Process -FilePath "C:\plugin-GUI\Build\Release\open-ephys.exe" -ArgumentList "C:\plugin-GUI\Build\Release\configs\file_reader_config.xml" -NoNewWindow -PassThru
           Write-Host "Started open-ephys process with ID: $($process.Id)"
-          Start-Sleep -Seconds 20
+          Start-Sleep -Seconds 10
           Write-Host "Starting Python script..."
           python run_all.py 2>&1 | Tee-Object -FilePath "python_output.log"
           Write-Host "Python script completed. Output saved to python_output.log"
