@@ -13,9 +13,9 @@ def test(gui, params):
     results = {}
 
     RECORD_ENGINES = {
-        "BINARY" : 0,
+        "Binary" : 0,
         "NWB2" : 1,
-        "OPENEPHYS" : 2
+        "Open Ephys" : 2
     }
 
     if params['fetch']:
@@ -42,7 +42,7 @@ def test(gui, params):
                 parameters = gui.get_parameters(node['id'])['parameters']
                 engine_param = next((param for param in parameters if param['name'] == 'engine'), None)
                 log(f"Engine parameter: {engine_param}")
-                if not engine_param['value'] == str(idx):
+                if not engine_param['value'] == engine:
                     raise Exception(f"Failed to set engine {params['engine']} for Record Node {node['id']}: {engine_param['value']}")
 
                 if engine == 'NWB2': break
