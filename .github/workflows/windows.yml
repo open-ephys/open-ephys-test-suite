@@ -68,7 +68,6 @@ jobs:
       - name: Run Tests
         shell: powershell
         run: |
-          New-Item -Path 'C:\open-ephys\data' -ItemType Directory
           $process = Start-Process -FilePath "C:\plugin-GUI\Build\Release\open-ephys.exe" -ArgumentList "C:\plugin-GUI\Build\Release\configs\file_reader_config.xml" -NoNewWindow -PassThru
           Write-Host "Started open-ephys process with ID: $($process.Id)"
           Start-Sleep -Seconds 10
