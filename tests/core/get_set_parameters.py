@@ -19,7 +19,7 @@ def test(gui, params):
 
     for param in bandpass_filter["streams"][0]["parameters"]:
         if param["name"] == 'low_cut':
-            condition = float(param["value"]) == testValue
+            condition = float(str(param["value"]).split(' ')[0]) == testValue
             if condition: results[testName] = "PASSED"
             else: results[testName] = "FAILED\n\tLow pass cutoff frequency expected: %s actual: %s" % (testValue, param["value"])
 
