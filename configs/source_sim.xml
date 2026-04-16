@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<SETTINGS>
+  <INFO>
+    <VERSION>1.0.0</VERSION>
+    <PLUGIN_API_VERSION>10</PLUGIN_API_VERSION>
+    <DATE>01 Jan 2000 00:00:00</DATE>
+    <OS>Windows 11</OS>
+    <MACHINE name="computer" cpu_model="Any"
+             cpu_num_cores="32"/>
+  </INFO>
+  <SIGNALCHAIN>
+    <PROCESSOR name="Source Sim" insertionPoint="0" pluginName="Source Sim"
+               type="4" index="7" libraryName="Source Simulator" libraryVersion="0.1.2"
+               processorType="2" nodeId="100">
+      <PROCESSOR_PARAMETERS clk_hz="1" npx_chans="384" npx_type="0" npx_probes="4" nidaq_chans="16"
+                            nidaq_devices="0"/>
+      <STREAM name="Probe-A-AP" description="Neural data sampled @ 30kHz "
+              sample_rate="30000.0" channel_count="384">
+        <PARAMETERS/>
+      </STREAM>
+      <STREAM name="Probe-B-AP" description="Neural data sampled @ 30kHz "
+              sample_rate="30000.0" channel_count="384">
+        <PARAMETERS/>
+      </STREAM>
+      <STREAM name="Probe-C-AP" description="Neural data sampled @ 30kHz "
+              sample_rate="30000.0" channel_count="384">
+        <PARAMETERS/>
+      </STREAM>
+      <STREAM name="Probe-D-AP" description="Neural data sampled @ 30kHz "
+              sample_rate="30000.0" channel_count="384">
+        <PARAMETERS/>
+      </STREAM>
+      <CUSTOM_PARAMETERS/>
+      <EDITOR isCollapsed="0" isDrawerOpen="0" displayName="Source Sim" activeStream="0"/>
+    </PROCESSOR>
+    <PROCESSOR name="Record Node" insertionPoint="1" pluginName="Record Node"
+               type="0" index="3" libraryName="" libraryVersion="" processorType="8"
+               nodeId="101">
+      <PROCESSOR_PARAMETERS directory="None" engine="0" events="1" spikes="1" main_sync="0"/>
+      <STREAM name="Probe-A-AP" description="Neural data sampled @ 30kHz "
+              sample_rate="30000.0" channel_count="384">
+        <PARAMETERS channels="" sync_line="0"/>
+      </STREAM>
+      <STREAM name="Probe-B-AP" description="Neural data sampled @ 30kHz "
+              sample_rate="30000.0" channel_count="384">
+        <PARAMETERS channels="" sync_line="0"/>
+      </STREAM>
+      <STREAM name="Probe-C-AP" description="Neural data sampled @ 30kHz "
+              sample_rate="30000.0" channel_count="384">
+        <PARAMETERS channels="" sync_line="0"/>
+      </STREAM>
+      <STREAM name="Probe-D-AP" description="Neural data sampled @ 30kHz "
+              sample_rate="30000.0" channel_count="384">
+        <PARAMETERS channels="" sync_line="0"/>
+      </STREAM>
+      <CUSTOM_PARAMETERS fifoMonitorsVisible="1">
+        <SYNC_STATUS streamKey="100|Probe-A-AP" status="OFF"/>
+        <SYNC_STATUS streamKey="100|Probe-B-AP" status="OFF"/>
+        <SYNC_STATUS streamKey="100|Probe-C-AP" status="OFF"/>
+        <SYNC_STATUS streamKey="100|Probe-D-AP" status="OFF"/>
+      </CUSTOM_PARAMETERS>
+      <EDITOR isCollapsed="0" isDrawerOpen="0" displayName="Record Node" activeStream="0"/>
+    </PROCESSOR>
+    <PROCESSOR name="Record Node" insertionPoint="1" pluginName="Record Node"
+               type="0" index="3" libraryName="" libraryVersion="" processorType="8"
+               nodeId="102">
+      <PROCESSOR_PARAMETERS directory="None" engine="0" events="1" spikes="1" main_sync="0"/>
+      <STREAM name="Probe-A-AP" description="Neural data sampled @ 30kHz "
+              sample_rate="30000.0" channel_count="384">
+        <PARAMETERS channels="" sync_line="0"/>
+      </STREAM>
+      <STREAM name="Probe-B-AP" description="Neural data sampled @ 30kHz "
+              sample_rate="30000.0" channel_count="384">
+        <PARAMETERS channels="" sync_line="0"/>
+      </STREAM>
+      <STREAM name="Probe-C-AP" description="Neural data sampled @ 30kHz "
+              sample_rate="30000.0" channel_count="384">
+        <PARAMETERS channels="" sync_line="0"/>
+      </STREAM>
+      <STREAM name="Probe-D-AP" description="Neural data sampled @ 30kHz "
+              sample_rate="30000.0" channel_count="384">
+        <PARAMETERS channels="" sync_line="0"/>
+      </STREAM>
+      <CUSTOM_PARAMETERS fifoMonitorsVisible="1">
+        <SYNC_STATUS streamKey="100|Probe-A-AP" status="OFF"/>
+        <SYNC_STATUS streamKey="100|Probe-B-AP" status="OFF"/>
+        <SYNC_STATUS streamKey="100|Probe-C-AP" status="OFF"/>
+        <SYNC_STATUS streamKey="100|Probe-D-AP" status="OFF"/>
+      </CUSTOM_PARAMETERS>
+      <EDITOR isCollapsed="0" isDrawerOpen="0" displayName="Record Node" activeStream="0"/>
+    </PROCESSOR>
+  </SIGNALCHAIN>
+  <CONTROLPANEL isOpen="1" recordPath="C:\Users\anjal.doshi\Documents\Open Ephys"
+                recordEngine="BINARY" clockMode="0" clockReferenceTime="0" forceNewDirectory="0"/>
+  <AUDIOEDITOR isMuted="0" volume="50.0" noiseGate="0.0"/>
+  <FILENAMECONFIG>
+    <PREPEND state="0" value=""/>
+    <MAIN state="1" value="YYYY-MM-DD_HH-MM-SS"/>
+    <APPEND state="0" value=""/>
+  </FILENAMECONFIG>
+  <EDITORVIEWPORT selectedTab="0" scroll="0"/>
+  <GRAPHVIEWER>
+    <NODE id="100" isProcessorInfoVisible="0">
+      <STREAM key="100|Probe-A-AP" isStreamVisible="0" isParamsVisible="0"/>
+      <STREAM key="100|Probe-B-AP" isStreamVisible="0" isParamsVisible="0"/>
+      <STREAM key="100|Probe-C-AP" isStreamVisible="0" isParamsVisible="0"/>
+      <STREAM key="100|Probe-D-AP" isStreamVisible="0" isParamsVisible="0"/>
+    </NODE>
+    <NODE id="101" isProcessorInfoVisible="0">
+      <STREAM key="100|Probe-A-AP" isStreamVisible="0" isParamsVisible="0"/>
+      <STREAM key="100|Probe-B-AP" isStreamVisible="0" isParamsVisible="0"/>
+      <STREAM key="100|Probe-C-AP" isStreamVisible="0" isParamsVisible="0"/>
+      <STREAM key="100|Probe-D-AP" isStreamVisible="0" isParamsVisible="0"/>
+    </NODE>
+    <NODE id="102" isProcessorInfoVisible="0">
+      <STREAM key="100|Probe-A-AP" isStreamVisible="0" isParamsVisible="0"/>
+      <STREAM key="100|Probe-B-AP" isStreamVisible="0" isParamsVisible="0"/>
+      <STREAM key="100|Probe-C-AP" isStreamVisible="0" isParamsVisible="0"/>
+      <STREAM key="100|Probe-D-AP" isStreamVisible="0" isParamsVisible="0"/>
+    </NODE>
+  </GRAPHVIEWER>
+  <PROCESSORLIST>
+    <COLOUR ID="801" R="50" G="50" B="50"/>
+    <COLOUR ID="804" R="241" G="90" B="41"/>
+    <COLOUR ID="802" R="0" G="174" B="239"/>
+    <COLOUR ID="803" R="0" G="166" B="81"/>
+    <COLOUR ID="805" R="90" G="110" B="110"/>
+    <COLOUR ID="806" R="255" G="0" B="0"/>
+    <COLOUR ID="807" R="0" G="0" B="0"/>
+  </PROCESSORLIST>
+  <UICOMPONENT isProcessorListOpen="1" isEditorViewportOpen="1" consoleOpenInWindow="0"/>
+</SETTINGS>
