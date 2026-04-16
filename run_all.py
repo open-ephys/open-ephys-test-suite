@@ -15,6 +15,7 @@ gui_tests = (
     os.path.join('core', 'get_set_recording_info.py'),
     #'config_audio_device.py',
     os.path.join('core', 'round_trip_record.py'),
+    os.path.join('core', 'disabled_streams_record.py')
 )
 
 #TODO: Add more built-inplugin tests
