@@ -29,9 +29,9 @@ def test(gui, params):
 
     for param in record_node["streams"][0]["parameters"]:
         if param["name"] == 'record_path':
-            condition = param["value"] == RECORD_PATH
+            condition = param["value"] == params['parent_directory']
             if condition: results["Set record path"] = "PASSED"
-            else: results["Set record path"] = "FAILED\n\tRecord path expected: %s actual: %s" % (RECORD_PATH, param["value"])
+            else: results["Set record path"] = "FAILED\n\tRecord path expected: %s actual: %s" % (params['parent_directory'], param["value"])
 
     gui.clear_signal_chain()
 
@@ -48,17 +48,26 @@ import platform
 from pathlib import Path
 
 if platform.system() == 'Windows':
-    RECORD_PATH = 'C:\\open-ephys\\data'
+    if os.getenv("GITHUB_ACTIONS"):
+        RECORD_PATH = os.getenv('OE_WINDOWS_GITHUB_RECORD_PATH')
+    else:  # custom local path
+        RECORD_PATH = os.getenv('OE_WINDOWS_LOCAL_RECORD_PATH')
 elif platform.system() == 'Linux':
-    RECORD_PATH = '<path/to/linux/runner>' #TODO
+    if os.getenv("GITHUB_ACTIONS"):
+        RECORD_PATH = os.getenv('OE_LINUX_GITHUB_RECORD_PATH')
+    else:  # custom local path
+        RECORD_PATH = os.getenv('OE_LINUX_LOCAL_RECORD_PATH')
 else:
-    RECORD_PATH = '<path/to/mac/runner>' #TODO
+    if os.getenv("GITHUB_ACTIONS"):
+        RECORD_PATH = os.getenv('OE_MAC_GITHUB_RECORD_PATH')
+    else:  # custom local path
+        RECORD_PATH = os.getenv('OE_MAC_LOCAL_RECORD_PATH')
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--cfg_path', required=False, type=str, default=os.path.join(Path(__file__).resolve().parent, '../../configs/file_reader_config.xml'))
-    parser.add_argument('--parent_directory', required=False, type=str, default='C:\\open-ephys\\data')
+    parser.add_argument('--parent_directory', required=False, type=str, default=RECORD_PATH)
     params = vars(parser.parse_args(sys.argv[1:]))
 
     results = test(OpenEphysHTTPServer(), params)
