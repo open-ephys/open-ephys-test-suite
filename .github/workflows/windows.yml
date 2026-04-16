@@ -28,7 +28,7 @@ jobs:
       - name: Download GUI
         shell: powershell
         run: |
-          Invoke-WebRequest https://openephys.jfrog.io/artifactory/GUI-binaries/Release/windows/open-ephys-v1.0.2-windows.zip -OutFile C:\open-ephys.zip
+          Invoke-WebRequest https://openephys.jfrog.io/artifactory/GUI-binaries/Dev/windows/open-ephys-latest-windows-dev.zip -OutFile C:\open-ephys.zip
           Expand-7ZipArchive -Path C:\open-ephys.zip -DestinationPath C:\
           git clone --branch development https://github.com/open-ephys/plugin-GUI.git C:\plugin-GUI
           cd C:\plugin-GUI\Build
@@ -52,6 +52,10 @@ jobs:
           msbuild INSTALL.vcxproj -p:Configuration=Release -p:Platform=x64
           git clone --branch main https://github.com/open-ephys-plugins/nwb-format.git C:\OEPlugins\nwb-format
           cd C:\OEPlugins\nwb-format\Build
+          cmake -G "Visual Studio 17 2022" -A x64 ..
+          msbuild INSTALL.vcxproj -p:Configuration=Release -p:Platform=x64
+          git clone --branch main https://github.com/open-ephys-plugins/source-sim.git C:\OEPlugins\source-sim
+          cd C:\OEPlugins\source-sim\Build
           cmake -G "Visual Studio 17 2022" -A x64 ..
           msbuild INSTALL.vcxproj -p:Configuration=Release -p:Platform=x64
       - name: Install test-suite
@@ -81,8 +85,8 @@ jobs:
           $timestamp = Get-Date -Format 'yyyy_MM_dd_HH_mm_ss'
           "timestamp=$timestamp" >> $env:GITHUB_OUTPUT
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: windows_${{ steps.timestamp.outputs.timestamp }}.log
           path: python_output.log
-          retention-days: 7
+          archive: false
