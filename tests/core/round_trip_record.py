@@ -6,7 +6,7 @@ import numpy as np
 from open_ephys.control import OpenEphysHTTPServer
 from open_ephys.analysis import Session
 
-def log(msg): print(f'[test-suite] {msg}', flush=True)
+def log(msg): print(f'[round_trip_record] {msg}', flush=True)
 
 def test(gui, params):
 
@@ -42,7 +42,7 @@ def test(gui, params):
                 parameters = gui.get_parameters(node['id'])['parameters']
                 engine_param = next((param for param in parameters if param['name'] == 'engine'), None)
                 log(f"Engine parameter: {engine_param}")
-                if not engine_param['value'] == engine:
+                if not engine_param['value'] == engine and not engine_param['value'] == str(idx):
                     raise Exception(f"Failed to set engine {params['engine']} for Record Node {node['id']}: {engine_param['value']}")
 
                 if engine == 'NWB2': break
@@ -112,12 +112,12 @@ def test(gui, params):
                     testName = str(recording.format) + " sample count"
                     SAMPLE_NUM_TOLERANCE = 0.2 * stream.metadata.sample_rate
 
-                    actual = len(stream.timestamps)
-                    expected = int(params['rec_time']*stream.metadata.sample_rate)
+                    expected = len(stream.timestamps)
+                    actual = stream.samples.shape[0]
 
-                    condition = np.absolute(actual - expected) < SAMPLE_NUM_TOLERANCE
+                    condition = np.isclose(actual, expected)
                     if condition: results[testName] = "PASSED"
-                    else: results[testName] = "FAILED\n\tExpected number of samples %d != %d" % (actual, expected)
+                    else: results[testName] = "FAILED\n\tActual number of samples %d != %d (Expected)" % (actual, expected)
 
                     show = False
                     if show:

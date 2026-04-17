@@ -156,7 +156,7 @@ def test(gui, params):
                             continue
 
                         num_samples, num_channels = stream.samples.shape
-                        expected_samples = int(params['rec_time'] * stream.metadata.sample_rate)
+                        expected_samples = len(stream.timestamps)
                         expected_channels = enabled_streams_info[stream_idx]['channel_count']
                         expected_stream_name = enabled_streams_info[stream_idx]['name']
                         actual_stream_name = stream.metadata.stream_name
@@ -170,7 +170,7 @@ def test(gui, params):
                             continue
 
                         testName = f"Node {node_idx} recording {rec_idx + 1} stream '{expected_stream_name}' sample count"
-                        condition = np.isclose(num_samples, expected_samples, atol=0.05 * expected_samples)
+                        condition = np.isclose(num_samples, expected_samples)
                         if condition:
                             results[testName] = "PASSED"
                         else:

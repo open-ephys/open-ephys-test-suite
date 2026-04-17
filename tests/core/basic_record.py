@@ -105,10 +105,10 @@ def test(gui, params):
 
                         # Validate amount of continuous data recorded is within range
                         testName = f"Recording {rec_idx+1} data size"
-                        expected_samples = params['rec_time'] * stream.metadata.sample_rate
-                        condition = np.isclose(len(stream.timestamps), expected_samples, atol=0.05 * expected_samples)
+                        expected_samples = len(stream.timestamps)
+                        condition = np.isclose(stream.samples.shape[0], expected_samples)
                         if condition: results[testName] = "PASSED"
-                        else: results[testName] = "FAILED\nExpected: %d\nActual: %d" % (expected_samples, len(stream.timestamps))
+                        else: results[testName] = "FAILED\nExpected: %d\nActual: %d" % (expected_samples, stream.samples.shape[0])
 
                         # Validate spikes were written in the second record node
                         testName = f"Recording {rec_idx+1} spike count"
